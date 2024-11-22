@@ -1,4 +1,4 @@
-from flask import request
+from typing import Dict, Any
 import re
 import datetime as dt
 import pandas as pd
@@ -84,13 +84,13 @@ def ensure_new_user(email: str, username: str) -> bool:
     return df.empty
 
 
-def register_new_user() -> None:
+def register_new_user(request_data: Dict[str, Any]) -> None:
     """
     Register a new user, after he passed all signing up validations.
     """
     user_data = {'is_manager': False}
 
-    for key, val in request.form.items():
+    for key, val in request_data.items():
         if key == 'birth_date':
             user_data[key] = dt.datetime.strptime(val, '%Y-%m-%d')
         elif key != 'confirm_password':
@@ -100,15 +100,15 @@ def register_new_user() -> None:
     push_dataframe_to_mysql(df=df, table_name=Tables.USERS)
 
 
-def is_admin() -> bool:
+def is_admin(username: str) -> bool:
     """
+    :param username: str.
     :return: bool. True if the user is defined as admin, otherwise False.
     """
-    email = request.form['email']
     statement = f"""
             SELECT *
             FROM taufashion_10.users u
-            WHERE u.email = '{email}' and u.is_manager = 1
+            WHERE u.username = '{username}' and u.is_manager = 1
         """
 
     df = fetch_data_from_mysql(sql_statement=statement)

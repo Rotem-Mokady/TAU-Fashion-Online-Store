@@ -1,4 +1,5 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, session
+import os
 
 from auth_and_register import (
     signing_in_response, validate_email_template, validate_username_template, validate_password_template,
@@ -6,11 +7,7 @@ from auth_and_register import (
 )
 
 app = Flask(__name__)
-
-
-# @app.errorhandler(404)
-# def invalid_route(e):
-#     return redirect("http://127.0.0.1:5000/")
+app.secret_key = os.urandom(24)
 
 
 @app.route('/')
@@ -24,7 +21,8 @@ def sign_in_auth_handler():
     resp = signing_in_response(username=username, password=password)
 
     if resp:
-        return redirect(url_for("home_page", username=username))
+        session['username'] = username  # store username in session
+        return redirect(url_for("home_page"))
 
     error_message = "Invalid username or password. Please try again."
     return render_template("sign_in.html", error_message=error_message)
@@ -57,31 +55,33 @@ def sign_up_registration_handler():
         error_message = "Email or username is already in use."
         return render_template("sign_up.html", error_message=error_message)
 
-    register_new_user()
-    return redirect(url_for("home_page", username=username))
+    register_new_user(request_data=request.form)
+    session['username'] = username  # store username in session
+    return redirect(url_for("home_page"))
 
 
 @app.route('/home_page')
 def home_page():
-    username = request.args.get('username')
-    return f"Hi {username}! Welcome to TAUFashion Online Store!"
+    username = session['username']
+    return render_template("home_page.html", username=username)
 
 
-@app.route('/admins_only')
-def admins_only():
-    username = request.args.get('username')
-    return f"Hello admin {username}!"
+@app.route('/admin')
+def admin():
+    username = session['username']
+    return render_template("admin.html", username=username)
 
 
-@app.route('/admins_only_auth_handler', methods=['POST'])
-def admins_only_auth_handler():
-    username = request.args.get('username')
-    is_admin_flag = is_admin()
+@app.route('/admin_auth_handler')
+def admin_auth_handler():
+    username = session['username']
+    is_admin_flag = is_admin(username)
 
     if is_admin_flag:
-        return redirect(url_for("admins_only", username=username))
+        return redirect(url_for("admin"))
 
-    return redirect(url_for("home_page", username=username))
+    error_message = "You are not authorized to access the admin page"
+    return render_template("home_page.html", username=username, error_message=error_message)
 
 
 if __name__ == "__main__":

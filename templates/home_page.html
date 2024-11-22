@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAU Fashion Online Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home_page.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Hello, {{ username }}! Welcome to TAU Fashion Online Store!</h1>
+    </header>
+
+    <!-- Admin Button as a form -->
+    <form action="{{ url_for('admin_auth_handler') }}">
+        <input type="hidden" name="username" value="{{ username }}">
+        <button type="submit" class="admin-btn">Admin Page</button>
+        <!-- Display the error message if it exists -->
+        {% if error_message %}
+            <p class="error-message">{{ error_message }}</p>
+        {% endif %}
+    </form>
+</body>
+</html>

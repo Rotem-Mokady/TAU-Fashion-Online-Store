@@ -1,0 +1,64 @@
+/* General Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Header Styles for Admin Page */
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    position: relative; /* Ensures header stays in place */
+    z-index: 1; /* Keeps header above other elements */
+}
+
+/* Admin Page Header */
+.admin-header {
+    font-size: 24px;
+    color: white;  /* White text to match the home page style */
+    margin: 0;     /* Remove default margin for proper alignment */
+}
+
+/* Admin Button Styles */
+.admin-btn {
+    position: fixed;    /* Fix the button relative to the viewport */
+    top: 10px;          /* Distance from the top edge */
+    right: 20px;        /* Distance from the right edge */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    z-index: 1000;      /* Ensure the button stays on top of other content */
+}
+
+.admin-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Back to Home Page Button Container */
+.admin-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+/* Button Styles for Back to Home Page */
+.back-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    background-color: #0056b3;
+}

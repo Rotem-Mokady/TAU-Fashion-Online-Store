@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <header>
+        <h1 class="admin-header">Hello admin {{ username }}!</h1>
+    </header>
+
+    <!-- Back to Home Page Button -->
+    <div class="admin-btn-container">
+        <form action="{{ url_for('home_page') }}" method="GET">
+            <button type="submit" class="back-btn">Back to Home Page</button>
+        </form>
+    </div>
+</body>
+</html>
