@@ -1,0 +1,92 @@
+/* Sign Up Page Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fc;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: #fff;
+    padding: 8px; /* Keeping the reduced padding */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px; /* Increased width to 450px */
+    height: auto;
+    box-sizing: border-box; /* Ensures padding is included in width */
+    margin-top: 50px;
+}
+
+.logo {
+    width: 130px; /* Keeping the reduced logo size */
+    height: auto;
+    display: block;
+    margin: 0 auto 6px; /* Keeping the reduced margin */
+}
+
+.form-group {
+    margin-bottom: 6px; /* Keeping the reduced margin between form groups */
+}
+
+.form-group label {
+    display: block;
+    color: #333;
+    margin-bottom: 4px; /* Reduced space for labels */
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 7px; /* Keeping the reduced padding in inputs */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px; /* Keeping the reduced font size */
+    box-sizing: border-box; /* Ensures padding is included in width */
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form-btn {
+    width: 100%;
+    padding: 7px; /* Keeping the reduced padding for the button */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 14px; /* Keeping the reduced font size */
+    cursor: pointer;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding is included in width */
+}
+
+.form-btn:hover {
+    background-color: #0056b3;
+}
+
+.form-footer {
+    text-align: center;
+}
+
+.form-footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
+
+.form-text {
+    font-size: 0.7rem;
+    color: #6c757d; /* Light grey color */
+    margin-top: 5px;
+    display: block;
+}
