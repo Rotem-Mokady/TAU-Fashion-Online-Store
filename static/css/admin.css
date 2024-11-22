@@ -8,12 +8,21 @@ body {
 
 /* Header Styles for Admin Page */
 header {
-    background-color: #333;
+    background-color: #333; /* Black background */
     color: white;
-    padding: 10px 0;
-    text-align: center;
+    padding: 10px 20px;
+    display: flex; /* Use Flexbox to align logo, header, and other items */
+    align-items: center; /* Vertically align items */
+    justify-content: space-between; /* Space items out across the header */
     position: relative; /* Ensures header stays in place */
     z-index: 1; /* Keeps header above other elements */
+}
+
+/* Logo Styles */
+header .logo {
+    width: 100px; /* Adjust the size of the logo */
+    height: auto;
+    flex-shrink: 0; /* Prevent the logo from shrinking */
 }
 
 /* Admin Page Header */
@@ -21,6 +30,8 @@ header {
     font-size: 24px;
     color: white;  /* White text to match the home page style */
     margin: 0;     /* Remove default margin for proper alignment */
+    flex-grow: 1;  /* Allow the header text to grow and center */
+    text-align: center; /* Keep header text centered */
 }
 
 /* Admin Button Styles */

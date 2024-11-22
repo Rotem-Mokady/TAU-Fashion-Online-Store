@@ -8,17 +8,32 @@ body {
 
 /* Header Styles */
 header {
-    background-color: #333;
+    background-color: #333; /* Black background */
     color: white;
-    padding: 10px 0;
-    text-align: center;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center; /* Vertically align the content in the header */
+    justify-content: space-between; /* Space out the content */
+    position: relative;
+}
+
+/* Logo Styles */
+header .logo {
+    width: 100px; /* Adjust the size of the logo */
+    height: auto;
+    flex-shrink: 0; /* Prevent the logo from shrinking */
+}
+
+/* Main Title Styles */
+header h1 {
+    font-size: 24px; /* Adjust font size for responsiveness */
+    text-align: center; /* Keep title centered in the header */
+    margin: 0;
+    flex-grow: 1; /* Allow the title to grow and take up available space */
 }
 
 /* Admin Button Styles */
 .admin-btn {
-    position: fixed;    /* Fix the button relative to the viewport */
-    top: 10px;          /* Distance from the top edge */
-    right: 20px;        /* Distance from the right edge */
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
@@ -28,17 +43,9 @@ header {
     z-index: 1000;      /* Ensure the button stays on top of other content */
 }
 
+/* Admin Button Hover Effect */
 .admin-btn:hover {
     background-color: #0056b3;
-}
-
-/* Admin Button Container and Error Message Styles */
-.admin-btn-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Align button to the left */
-    position: relative;
-    top: 40px; /* Adjust position to avoid overlap with fixed button */
 }
 
 /* Error Message Styles */

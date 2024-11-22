@@ -8,17 +8,17 @@
 </head>
 <body>
     <header>
+        <img src="{{ url_for('static', filename='images/black_logo.png') }}" alt="Black Logo" class="logo">
         <h1>Hello, {{ username }}! Welcome to TAU Fashion Online Store!</h1>
+        <form action="{{ url_for('admin_auth_handler') }}">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit" class="admin-btn">Admin Page</button>
+        </form>
     </header>
 
-    <!-- Admin Button as a form -->
-    <form action="{{ url_for('admin_auth_handler') }}">
-        <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit" class="admin-btn">Admin Page</button>
-        <!-- Display the error message if it exists -->
-        {% if error_message %}
-            <p class="error-message">{{ error_message }}</p>
-        {% endif %}
-    </form>
+    <!-- Display the error message if it exists -->
+    {% if error_message %}
+        <p class="error-message">{{ error_message }}</p>
+    {% endif %}
 </body>
 </html>
