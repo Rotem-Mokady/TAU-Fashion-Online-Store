@@ -1,3 +1,4 @@
+import socket
 import pandas as pd
 from typing import Union
 from sqlalchemy import create_engine
@@ -5,10 +6,25 @@ from sqlalchemy.engine.base import Engine
 from sqlalchemy.exc import SQLAlchemyError
 
 
+def _get_ip_address() -> str:
+    """
+    Find IP address for the connection to MySQL database.
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
+    # some IP address that's guaranteed to be reachable
+    s.connect(('1.1.1.1', 1))
+
+    # get the IP address and close the socket session
+    ip_address = s.getsockname()[0]
+    s.close()
+    return ip_address
+
+
 class ConnectionDetails:
     USERNAME = 'root'
     PASSWORD = 'root'
-    IP_ADDRESS = '192.168.1.241'
+    IP_ADDRESS = _get_ip_address()
     DB = 'taufashion_10'
 
 
