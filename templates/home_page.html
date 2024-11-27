@@ -20,5 +20,13 @@
     {% if error_message %}
         <p class="error-message">{{ error_message }}</p>
     {% endif %}
+
+    <div class="container mt-5">
+        <h1>Available Products In The Store</h1>
+        <div class="table-container">
+            <!-- Insert the DataFrame HTML table here -->
+            {{ table|safe }}
+        </div>
+    </div>
 </body>
 </html>
