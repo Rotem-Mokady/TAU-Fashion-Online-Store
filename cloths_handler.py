@@ -74,3 +74,7 @@ def generate_summary_info(product_info: Dict[str, Any], amount: int) -> Dict[str
     return final_info
 
 
+def add_transaction_to_db(data: Dict[str, Any]) -> None:
+    pass
+
+

@@ -1,11 +1,12 @@
 from flask import Flask, redirect, render_template, request, url_for, session
 import os
+from ast import literal_eval
 
 from auth_and_register import (
     signing_in_response, validate_email_template, validate_username_template, validate_password_template,
     ensure_new_user, register_new_user, is_admin
 )
-from cloths_handler import ClothsHandler, get_cloth_full_details, generate_summary_info
+from cloths_handler import ClothsHandler, get_cloth_full_details, generate_summary_info, add_transaction_to_db
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -72,6 +73,14 @@ def home_page():
     session['home_page_table'] = table
 
     order_summary_success_message = request.args.get('success_message', default=None)
+    order_summary_info = request.args.get('order_summary_info', default=None)
+
+    # If the user accepted and he has a reservation
+    if order_summary_success_message and order_summary_info:
+        success_message, data = order_summary_success_message, literal_eval(order_summary_info)
+        request.args['success_message'], request.args['order_summary_info'] = None, None
+
+        add_transaction_to_db(data=data)
 
     return render_template(
         "home_page.html", username=username, table=table, success_message=order_summary_success_message
@@ -99,6 +108,7 @@ def order_summary():
                 table.append(product_summary)
 
     if table:
+        session['order_summary_info'] = table
         return render_template("order_summary.html", username=username, table=table)
     else:
         return redirect(url_for('home_page'))
