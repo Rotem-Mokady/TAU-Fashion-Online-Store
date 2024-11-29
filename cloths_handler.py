@@ -68,8 +68,8 @@ def generate_summary_info(product_info: Dict[str, Any], amount: int) -> Dict[str
         if key not in ('Inventory', 'Path', 'Your Order'):
             final_info[key] = val
 
-    final_info['total_amount'] = amount
-    final_info['total_price'] = amount * product_info['Price']
+    final_info['Total Amount'] = amount
+    final_info['Total Price'] = amount * product_info['Price']
 
     return final_info
 

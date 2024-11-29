@@ -74,13 +74,15 @@ def home_page():
     return render_template("home_page.html", username=username, table=table)
 
 
-@app.route('/order_summary', methods=['POST'])
+@app.route('/order_summary', methods=['GET', 'POST'])
 def order_summary():
-    home_page_table = session.get('home_page_table')
-    if not home_page_table:
+    username, home_page_table = session.get('username'), session.get('home_page_table')
+
+    if not username or not home_page_table:
         return redirect(url_for('home_page'))
 
-    results = []
+    table = []
+
     for key in request.form:
         if key.startswith('product_'):
             # Extract the product ID and the new order value
@@ -90,11 +92,9 @@ def order_summary():
             if amount > 0:
                 product_info = get_cloth_full_details(cloth_table=home_page_table, product_id=product_id)
                 product_summary = generate_summary_info(product_info=product_info, amount=amount)
-                results.append(product_summary)
+                table.append(product_summary)
 
-    print(results)
-
-    return redirect(url_for('home_page'))  # Redirect back to the main page
+    return render_template("order_summary.html", username=username, table=table)
 
 
 @app.route('/admin')

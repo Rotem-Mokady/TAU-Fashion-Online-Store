@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TAU Fashion Online Store</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home_page.css') }}">
+    <title>Order Summary - TAU Fashion Online Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/order_summary.css') }}">
 </head>
 <body>
     <header>
         <img src="{{ url_for('static', filename='images/black_logo.png') }}" alt="Black Logo" class="logo">
-        <h1>Hello, {{ username }}! Welcome to TAU Fashion Online Store!</h1>
+        <h1>Hello, {{ username }}! Here is Your Order Summary</h1>
         <form action="{{ url_for('admin_auth_handler') }}">
             <input type="hidden" name="username" value="{{ username }}">
             <button type="submit" class="admin-btn">Admin Page</button>
@@ -22,9 +22,9 @@
     {% endif %}
 
     <div class="container mt-5">
-        <h1>Available Products In The Store</h1>
+        <h1>Your Order Summary</h1>
         <div class="table-container">
-            <!-- Display table with the dataframe -->
+            <!-- Display table with the order summary -->
             <form action="{{ url_for('order_summary') }}" method="POST">
                 <table>
                     <thead>
@@ -33,33 +33,42 @@
                             <th>Name</th>
                             <th>Sex</th>
                             <th>Price</th>
-                            <th>Inventory</th>
-                            <th>Your Order</th>
+                            <th>Total Amount</th>
+                            <th>Total Price</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for row in table %}
                             <tr>
-                                <!-- Make the "Id" clickable to redirect to the path -->
-                                <td><a href="{{ row['Path'] }}">{{ row['Id'] }}</a></td>
+                                <td>{{ row['Id'] }}</td>
                                 <td>{{ row['Name'] }}</td>
                                 <td>{{ row['Sex'] }}</td>
                                 <td>{{ row['Price'] }}</td>
-                                <td>{{ row['Inventory'] }}</td>
-                                <!-- Editable "Your Order" field -->
-                                <td>
-                                    <input type="number" name="product_{{ row['Id'] }}" value="{{ row['Your Order'] }}" min="0" max="{{ row['Inventory'] }}" step="1">
-                                </td>
+                                <td>{{ row['Total Amount'] }}</td>
+                                <td>{{ row['Total Price'] }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <!-- Updated Button Wrapper -->
+                <!-- Checkout Button -->
                 <div class="checkout-btn-container">
-                    <button type="submit" class="checkout-btn">Go To Checkout</button>
+                    <label for="modal-toggle" class="checkout-btn">Checkout</label>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Hidden checkbox that controls the modal visibility -->
+    <input type="checkbox" id="modal-toggle">
+
+    <!-- Modal -->
+    <div class="modal">
+        <div class="modal-content">
+            <h2>Are You Sure?</h2>
+            <label class="cancel-btn" for="modal-toggle">Cancel</label>
+            <label class="process-btn" for="modal-toggle">Process</label>
+        </div>
+    </div>
+
 </body>
 </html>

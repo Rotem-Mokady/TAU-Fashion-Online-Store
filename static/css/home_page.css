@@ -46,7 +46,7 @@ header h1 {
     text-decoration: none;
     border-radius: 5px;
     font-size: 16px;
-    z-index: 1000;      /* Ensure the button stays on top of other content */
+    z-index: 1000; /* Ensure the button stays on top of other content */
 }
 
 /* Admin Button Hover Effect */
@@ -58,8 +58,8 @@ header h1 {
 .error-message {
     color: red;
     margin-top: 5px;
-    text-align: right;  /* Align the error message to the right */
-    font-size: 18px;    /* Set font size for error message */
+    text-align: right; /* Align the error message to the right */
+    font-size: 18px; /* Set font size for error message */
 }
 
 /* Table Container Styles */
@@ -116,4 +116,36 @@ table td a {
 
 table td a:hover {
     text-decoration: underline;
+}
+
+/* Checkout Button Container */
+.checkout-btn-container {
+    display: flex;
+    justify-content: center; /* Center align the button */
+    margin-top: 20px;
+    position: relative;
+}
+
+/* Checkout Button Styling */
+.checkout-btn {
+    padding: 15px 30px;
+    background-color: #28a745; /* Green background for the button */
+    color: white;
+    font-size: 18px;
+    border-radius: 30px; /* Round corners */
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 128, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Hover Effects */
+.checkout-btn:hover {
+    background-color: #218838;
+    transform: translateY(-5px); /* Slight lift effect */
+}
+
+.checkout-btn:active {
+    background-color: #1e7e34; /* Darker green when clicked */
+    transform: translateY(0); /* Reset lift effect */
 }
