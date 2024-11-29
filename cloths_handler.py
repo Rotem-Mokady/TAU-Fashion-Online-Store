@@ -3,16 +3,20 @@ import pandas as pd
 from db_utils import fetch_data_from_mysql
 
 
+IMAGES_DIR = "static\\images\\products"
+
+
 def _get_available_cloths() -> pd.DataFrame:
     """
     Returns all available cloths.
     """
-    query = """
+    query = f"""
     select  c.id, 
 		    c.name,
             c.sex,
             c.price,
-            c.inventory
+            c.inventory,
+            replace(c.path, '\\\\', '\\\\\\\\') as path
         
     from taufashion_10.cloths c
     
@@ -22,10 +26,12 @@ def _get_available_cloths() -> pd.DataFrame:
     """
     df = fetch_data_from_mysql(sql_statement=query)
 
+    df['path'] = df['path'].apply(lambda path: f"{IMAGES_DIR}\\{path}.jpeg")
+
     return df
 
 
-def cloth_html_convertor() -> str:
+def home_page_handler() -> str:
     """
     convert cloth DataFrame to HTML string.
     """

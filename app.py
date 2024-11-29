@@ -5,7 +5,7 @@ from auth_and_register import (
     signing_in_response, validate_email_template, validate_username_template, validate_password_template,
     ensure_new_user, register_new_user, is_admin
 )
-from cloths_handler import cloth_html_convertor
+from cloths_handler import home_page_handler
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -67,7 +67,7 @@ def home_page():
     if not username:
         render_template("sign_in.html")
 
-    cloth_df = cloth_html_convertor()
+    cloth_df = home_page_handler()
     return render_template("home_page.html", username=username, table=cloth_df)
 
 
@@ -92,7 +92,7 @@ def admin_auth_handler():
         return redirect(url_for("admin"))
 
     error_message = "You are not authorized to access the admin page"
-    cloth_df = cloth_html_convertor()
+    cloth_df = home_page_handler()
     
     return render_template("home_page.html", username=username, error_message=error_message, table=cloth_df)
 
