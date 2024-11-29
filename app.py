@@ -63,21 +63,29 @@ def sign_up_registration_handler():
 
 @app.route('/home_page')
 def home_page():
-    username = session['username']
-    cloth_df = cloth_html_convertor()
+    username = session.get('username')
+    if not username:
+        render_template("sign_in.html")
 
+    cloth_df = cloth_html_convertor()
     return render_template("home_page.html", username=username, table=cloth_df)
 
 
 @app.route('/admin')
 def admin():
-    username = session['username']
+    username = session.get('username')
+    if not username:
+        render_template("sign_in.html")
+
     return render_template("admin.html", username=username)
 
 
 @app.route('/admin_auth_handler')
 def admin_auth_handler():
-    username = session['username']
+    username = session.get('username')
+    if not username:
+        render_template("sign_in.html")
+
     is_admin_flag = is_admin(username)
 
     if is_admin_flag:
