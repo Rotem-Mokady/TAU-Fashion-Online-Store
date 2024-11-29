@@ -9,8 +9,8 @@ class ClothsHandler:
 
         self._images_dir = "static\\images\\products"
 
-        self.df = self._get_available_cloths()
-        self.data_to_html = self.df.to_dict(orient='records')
+        self.home_page_df = self._home_page_handler()
+        self.home_page_data_to_html = self.home_page_df.to_dict(orient='records')
 
     def _get_available_cloths(self) -> pd.DataFrame:
         """
@@ -36,7 +36,7 @@ class ClothsHandler:
 
         return df
 
-    def home_page_handler(self) -> pd.DataFrame:
+    def _home_page_handler(self) -> pd.DataFrame:
         """
         convert cloth DataFrame to the Jinga handler.
         """

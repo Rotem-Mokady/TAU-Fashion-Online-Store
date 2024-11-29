@@ -68,10 +68,10 @@ def home_page():
         return render_template("sign_in.html")
 
     cloths = ClothsHandler()
-    cloths_data_to_html = cloths.data_to_html
-    session['cloth_data'] = cloths_data_to_html
+    table = cloths.home_page_data_to_html
+    session['home_page_table'] = table
 
-    return render_template("home_page.html", username=username, table=cloths_data_to_html)
+    return render_template("home_page.html", username=username, table=table)
 
 
 @app.route('/admin')
