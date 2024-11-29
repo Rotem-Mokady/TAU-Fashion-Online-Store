@@ -16,6 +16,13 @@
         </form>
     </header>
 
+    <!-- Display the success message if it exists -->
+    {% if success_message %}
+        <div class="success-message">
+            <p>{{ success_message }}</p>
+        </div>
+    {% endif %}
+
     <!-- Display the error message if it exists -->
     {% if error_message %}
         <p class="error-message">{{ error_message }}</p>

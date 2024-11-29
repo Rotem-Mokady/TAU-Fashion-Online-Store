@@ -66,9 +66,11 @@
         <div class="modal-content">
             <h2>Are You Sure?</h2>
             <label class="cancel-btn" for="modal-toggle">Cancel</label>
-            <label class="process-btn" for="modal-toggle">Process</label>
+            <label class="process-btn" for="modal-toggle" onclick="window.location.href='{{ url_for('home_page', success_message='Your Order Has Been Confirmed!') }}'">Process</label>
+
         </div>
     </div>
+
 
 </body>
 </html>

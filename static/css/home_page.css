@@ -54,6 +54,15 @@ header h1 {
     background-color: #0056b3;
 }
 
+/* Success Message Styles */
+.success-message {
+    color: green; /* Green color for success */
+    font-size: 22px; /* Larger font size */
+    font-weight: bold; /* Make the text bold */
+    margin-top: 10px;
+    text-align: center; /* Center align the success message */
+}
+
 /* Error Message Styles */
 .error-message {
     color: red;

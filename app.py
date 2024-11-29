@@ -71,7 +71,11 @@ def home_page():
     table = cloths.home_page_data_to_html
     session['home_page_table'] = table
 
-    return render_template("home_page.html", username=username, table=table)
+    order_summary_success_message = request.args.get('success_message', default=None)
+
+    return render_template(
+        "home_page.html", username=username, table=table, success_message=order_summary_success_message
+    )
 
 
 @app.route('/order_summary', methods=['GET', 'POST'])
@@ -94,7 +98,10 @@ def order_summary():
                 product_summary = generate_summary_info(product_info=product_info, amount=amount)
                 table.append(product_summary)
 
-    return render_template("order_summary.html", username=username, table=table)
+    if table:
+        return render_template("order_summary.html", username=username, table=table)
+    else:
+        return redirect(url_for('home_page'))
 
 
 @app.route('/admin')
