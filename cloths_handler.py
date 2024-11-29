@@ -41,7 +41,7 @@ def home_page_handler() -> str:
     # add user amount choosing column
     df['Your Order'] = 0
     # HTML table with classes for styling
-    df_html = df.to_html(classes='table table-bordered table-striped', index=False)
+    df_html = df.to_dict(orient='records')
 
     return df_html
 

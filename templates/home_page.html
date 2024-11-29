@@ -24,8 +24,32 @@
     <div class="container mt-5">
         <h1>Available Products In The Store</h1>
         <div class="table-container">
-            <!-- Insert the DataFrame HTML table here -->
-            {{ table|safe }}
+            <!-- Display table with the dataframe -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Sex</th>
+                        <th>Price</th>
+                        <th>Inventory</th>
+                        <th>Your Order</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table %}
+                        <tr>
+                            <!-- Make the "Id" clickable to redirect to the path -->
+                            <td><a href="{{ row['Path'] }}">{{ row['Id'] }}</a></td>
+                            <td>{{ row['Name'] }}</td>
+                            <td>{{ row['Sex'] }}</td>
+                            <td>{{ row['Price'] }}</td>
+                            <td>{{ row['Inventory'] }}</td>
+                            <td>{{ row['Your Order'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </body>
