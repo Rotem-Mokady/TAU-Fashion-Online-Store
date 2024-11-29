@@ -5,7 +5,7 @@ from auth_and_register import (
     signing_in_response, validate_email_template, validate_username_template, validate_password_template,
     ensure_new_user, register_new_user, is_admin
 )
-from cloths_handler import home_page_handler
+from cloths_handler import ClothsHandler
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -65,10 +65,13 @@ def sign_up_registration_handler():
 def home_page():
     username = session.get('username')
     if not username:
-        render_template("sign_in.html")
+        return render_template("sign_in.html")
 
-    cloth_df = home_page_handler()
-    return render_template("home_page.html", username=username, table=cloth_df)
+    cloths = ClothsHandler()
+    cloths_data_to_html = cloths.data_to_html
+    session['cloth_data'] = cloths_data_to_html
+
+    return render_template("home_page.html", username=username, table=cloths_data_to_html)
 
 
 @app.route('/admin')

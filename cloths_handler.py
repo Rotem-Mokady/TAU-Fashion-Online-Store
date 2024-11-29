@@ -3,46 +3,49 @@ import pandas as pd
 from db_utils import fetch_data_from_mysql
 
 
-IMAGES_DIR = "static\\images\\products"
+class ClothsHandler:
 
+    def __init__(self):
 
-def _get_available_cloths() -> pd.DataFrame:
-    """
-    Returns all available cloths.
-    """
-    query = f"""
-    select  c.id, 
-		    c.name,
-            c.sex,
-            c.price,
-            c.inventory,
-            replace(c.path, '\\\\', '\\\\\\\\') as path
+        self._images_dir = "static\\images\\products"
+
+        self.df = self._get_available_cloths()
+        self.data_to_html = self.df.to_dict(orient='records')
+
+    def _get_available_cloths(self) -> pd.DataFrame:
+        """
+        Returns all available cloths.
+        """
+        query = f"""
+        select  c.id, 
+                c.name,
+                c.sex,
+                c.price,
+                c.inventory,
+                replace(c.path, '\\\\', '\\\\\\\\') as path
+            
+        from taufashion_10.cloths c
         
-    from taufashion_10.cloths c
-    
-    where c.inventory > 0
-    
-    order by c.campaign desc 
-    """
-    df = fetch_data_from_mysql(sql_statement=query)
+        where c.inventory > 0
+        
+        order by c.campaign desc 
+        """
+        df = fetch_data_from_mysql(sql_statement=query)
 
-    df['path'] = df['path'].apply(lambda path: f"{IMAGES_DIR}\\{path}.jpeg")
+        df['path'] = df['path'].apply(lambda path: f"{self._images_dir}\\{path}.jpeg")
 
-    return df
+        return df
 
+    def home_page_handler(self) -> pd.DataFrame:
+        """
+        convert cloth DataFrame to the Jinga handler.
+        """
+        df = self._get_available_cloths()
+        # capitalize columns names
+        df.columns = [column.capitalize() for column in df.columns]
+        # add user amount choosing column
+        df['Your Order'] = 0
 
-def home_page_handler() -> str:
-    """
-    convert cloth DataFrame to HTML string.
-    """
-    df = _get_available_cloths()
-    # capitalize columns names
-    df.columns = [column.capitalize() for column in df.columns]
-    # add user amount choosing column
-    df['Your Order'] = 0
-    # HTML table with classes for styling
-    df_html = df.to_dict(orient='records')
-
-    return df_html
+        return df
 
 
