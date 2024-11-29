@@ -5,7 +5,7 @@ from auth_and_register import (
     signing_in_response, validate_email_template, validate_username_template, validate_password_template,
     ensure_new_user, register_new_user, is_admin
 )
-from cloths_handler import ClothsHandler
+from cloths_handler import ClothsHandler, get_cloth_full_details, generate_summary_info
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -72,6 +72,29 @@ def home_page():
     session['home_page_table'] = table
 
     return render_template("home_page.html", username=username, table=table)
+
+
+@app.route('/order_summary', methods=['POST'])
+def order_summary():
+    home_page_table = session.get('home_page_table')
+    if not home_page_table:
+        return redirect(url_for('home_page'))
+
+    results = []
+    for key in request.form:
+        if key.startswith('product_'):
+            # Extract the product ID and the new order value
+            product_id = int(key.split('_')[1])
+            amount = int(request.form[key])
+
+            if amount > 0:
+                product_info = get_cloth_full_details(cloth_table=home_page_table, product_id=product_id)
+                product_summary = generate_summary_info(product_info=product_info, amount=amount)
+                results.append(product_summary)
+
+    print(results)
+
+    return redirect(url_for('home_page'))  # Redirect back to the main page
 
 
 @app.route('/admin')

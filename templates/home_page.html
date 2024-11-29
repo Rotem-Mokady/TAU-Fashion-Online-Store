@@ -25,31 +25,37 @@
         <h1>Available Products In The Store</h1>
         <div class="table-container">
             <!-- Display table with the dataframe -->
-            <table>
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Sex</th>
-                        <th>Price</th>
-                        <th>Inventory</th>
-                        <th>Your Order</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in table %}
+            <form action="{{ url_for('order_summary') }}" method="POST">
+                <table>
+                    <thead>
                         <tr>
-                            <!-- Make the "Id" clickable to redirect to the path -->
-                            <td><a href="{{ row['Path'] }}">{{ row['Id'] }}</a></td>
-                            <td>{{ row['Name'] }}</td>
-                            <td>{{ row['Sex'] }}</td>
-                            <td>{{ row['Price'] }}</td>
-                            <td>{{ row['Inventory'] }}</td>
-                            <td>{{ row['Your Order'] }}</td>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Sex</th>
+                            <th>Price</th>
+                            <th>Inventory</th>
+                            <th>Your Order</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for row in table %}
+                            <tr>
+                                <!-- Make the "Id" clickable to redirect to the path -->
+                                <td><a href="{{ row['Path'] }}">{{ row['Id'] }}</a></td>
+                                <td>{{ row['Name'] }}</td>
+                                <td>{{ row['Sex'] }}</td>
+                                <td>{{ row['Price'] }}</td>
+                                <td>{{ row['Inventory'] }}</td>
+                                <!-- Editable "Your Order" field -->
+                                <td>
+                                    <input type="number" name="product_{{ row['Id'] }}" value="{{ row['Your Order'] }}" min="0" max="{{ row['Inventory'] }}" step="1">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" class="update-btn">Go To Checkout</button>
+            </form>
         </div>
     </div>
 </body>

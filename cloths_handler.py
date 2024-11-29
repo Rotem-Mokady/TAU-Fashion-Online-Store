@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Dict, Any
 
 from db_utils import fetch_data_from_mysql
 
@@ -47,5 +48,29 @@ class ClothsHandler:
         df['Your Order'] = 0
 
         return df
+
+
+def get_cloth_full_details(product_id: int, cloth_table: Dict[str, Any]) -> Dict[str, Any]:
+    df = pd.DataFrame(cloth_table)
+    mask = df['Id'] == product_id
+    filtered_data = df[mask].to_dict(orient='records')
+
+    if len(filtered_data) != 1:
+        raise RuntimeError()
+
+    data = filtered_data[0]
+    return data
+
+
+def generate_summary_info(product_info: Dict[str, Any], amount: int) -> Dict[str, Any]:
+    final_info = {}
+    for key, val in product_info.items():
+        if key not in ('Inventory', 'Path', 'Your Order'):
+            final_info[key] = val
+
+    final_info['total_amount'] = amount
+    final_info['total_price'] = amount * product_info['Price']
+
+    return final_info
 
 
