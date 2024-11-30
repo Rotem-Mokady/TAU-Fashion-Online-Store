@@ -1,11 +1,14 @@
 from flask import Flask, redirect, render_template, request, url_for, session
 import os
+from typing import Dict
 
 from auth_and_register import (
     signing_in_response, validate_email_template, validate_username_template, validate_password_template,
     ensure_new_user, register_new_user, is_admin
 )
-from cloths_handler import ClothsHandler, get_cloth_full_details, generate_summary_info, add_transaction_to_db
+from cloths_handler import (
+    ClothsHandler, get_cloth_full_details, generate_summary_info, add_transaction_to_db, UpdateClothsTable
+)
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -13,6 +16,9 @@ app.secret_key = os.urandom(24)
 
 @app.route('/')
 def sign_in():
+    if session.get('username'):
+        return redirect(url_for("home_page"))
+
     return render_template("sign_in.html")
 
 
@@ -129,6 +135,10 @@ def admin():
     table_headers = df.columns.tolist()
     table_data = df.values.tolist()
 
+    if not session.get('admin_table'):
+        table = cloths.admin_page_data_to_html
+        session['admin_table'] = table
+
     return render_template("admin.html", username=username, table_headers=table_headers, table_data=table_data)
 
 
@@ -149,8 +159,13 @@ def admin_auth_handler():
 
 @app.route('/save_cloths_table', methods=['POST'])
 def save_cloths_table():
-    data = request.form
-    print(data)
+    current_table = session.get('admin_table')
+    if not current_table:
+        redirect(url_for("admin"))
+
+    request_data: Dict = request.form
+    is_done = UpdateClothsTable(request_data=request_data, current_table=current_table).run()
+    print(is_done)
 
     return redirect(url_for('admin'))
 

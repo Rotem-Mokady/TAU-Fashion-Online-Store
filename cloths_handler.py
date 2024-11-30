@@ -1,8 +1,9 @@
 import pandas as pd
 import datetime as dt
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
+from distutils.util import strtobool
 
-from db_utils import fetch_data_from_mysql, push_dataframe_to_mysql, Tables
+from db_utils import fetch_data_from_mysql, push_dataframe_to_mysql, Tables, run_sql_command
 from auth_and_register import get_email_by_username
 
 
@@ -16,6 +17,7 @@ class ClothsHandler:
         self.home_page_data_to_html = self.home_page_df.to_dict(orient='records')
 
         self.admin_page_df = self._admin_page_handler()
+        self.admin_page_data_to_html = self.admin_page_df.to_dict(orient='records')
 
     @staticmethod
     def _collect_raw_data() -> pd.DataFrame:
@@ -127,5 +129,69 @@ def add_transaction_to_db(username: str, data: List[Dict[str, Any]]) -> None:
     df = pd.DataFrame(data)
 
     push_dataframe_to_mysql(df=df, table_name=Tables.TRANSACTIONS)
+
+
+class UpdateClothsTable:
+    def __init__(self, request_data: Dict, current_table: List[Dict[str, Any]]) -> None:
+        """
+        Push new table from managers' page to cloth table.
+        """
+        self.request_data = request_data
+        self.current_table = current_table
+
+    @staticmethod
+    def _comparison_handler(old_val: Any, new_val: Any, key: str) -> Union[Any, None]:
+        """
+        New value for exists difference, None otherwise.
+        """
+        if key in ('Id', 'Inventory'):
+            new_val = int(new_val)
+        elif key == 'Price':
+            new_val = float(new_val)
+        elif key == 'Campaign':
+            new_val = 1 if strtobool(new_val) else 0
+
+        if old_val != new_val:
+            return new_val
+
+    @staticmethod
+    def _update_on_db(product_id: int, column_name: str, new_value: Any):
+        new_value_sql = f"'{new_value}'" if isinstance(new_value, str) else new_value
+        stm = f"""
+            update cloths
+            set {column_name.lower()} = {new_value_sql}
+            where id = {product_id}
+        """
+
+        run_sql_command(sql_command=stm)
+
+    def run(self) -> bool:
+        """
+        Returns True if one value or more have been updated, False otherwise.
+        """
+        new_values_updated_flag = False
+        # iterate each row of the old data
+        for current_row in self.current_table:
+            product_id = current_row['Id']
+
+            # on each row, check if the new values are different
+            for key, val in current_row.items():
+                request_key = f'{key}_{product_id}'
+                new_value = self.request_data.get(request_key, default=val)
+
+                # update only when new value actually exists
+                new_value_to_update = self._comparison_handler(old_val=val, new_val=new_value, key=key)
+                if new_value_to_update:
+                    self._update_on_db(product_id=product_id, column_name=key, new_value=new_value_to_update)
+
+                    # approve that at least one action has been done
+                    if not new_values_updated_flag:
+                        new_values_updated_flag = True
+
+        return new_values_updated_flag
+
+
+
+
 
 
