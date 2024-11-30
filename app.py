@@ -4,7 +4,7 @@ from typing import Dict
 
 from auth_and_register import (
     signing_in_response, validate_email_template, validate_username_template, validate_password_template,
-    ensure_new_user, register_new_user, is_admin
+    ensure_new_user, register_new_user, is_admin, ensure_minimum_age
 )
 from cloths_handler import (
     ClothsHandler, get_cloth_full_details, generate_summary_info, add_transaction_to_db, UpdateClothsTable
@@ -44,11 +44,13 @@ def sign_up():
 def sign_up_registration_handler():
     email, username = request.form['email'], request.form['username']
     password, confirmed_password = request.form['password'], request.form['confirm_password']
+    birth_date_str = request.form['birth_date']
 
     email_resp = validate_email_template(email)
     username_resp = validate_username_template(username)
     password_resp = validate_password_template(password)
     is_new = ensure_new_user(email=email, username=username)
+    is_eighteen = ensure_minimum_age(birth_date_str=birth_date_str)
 
     if not (email_resp and username_resp and password_resp):
         error_message = "Invalid email address, username or password. Please try again."
@@ -60,6 +62,10 @@ def sign_up_registration_handler():
 
     elif not is_new:
         error_message = "Email or username is already in use."
+        return render_template("sign_up.html", error_message=error_message)
+
+    elif not is_eighteen:
+        error_message = "Your age is under the age limitation."
         return render_template("sign_up.html", error_message=error_message)
 
     register_new_user(request_data=request.form)

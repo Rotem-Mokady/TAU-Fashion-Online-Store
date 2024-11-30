@@ -84,6 +84,17 @@ def ensure_new_user(email: str, username: str) -> bool:
     return df.empty
 
 
+def ensure_minimum_age(birth_date_str: str) -> bool:
+    """
+    Make sure that the user is 18 years old at least.
+    """
+    birth_date = dt.datetime.strptime(birth_date_str, '%Y-%m-%d').date()
+    current_date = dt.datetime.now().date()
+
+    years_diff = (current_date - birth_date).days / 365
+    return years_diff >= 18
+
+
 def register_new_user(request_data: Dict[str, Any]) -> None:
     """
     Register a new user, after he passed all signing up validations.
