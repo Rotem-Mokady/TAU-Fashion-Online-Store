@@ -15,7 +15,7 @@ class ClothsHandler:
         self.home_page_df = self._home_page_handler()
         self.home_page_data_to_html = self.home_page_df.to_dict(orient='records')
 
-    def _get_available_cloths(self) -> pd.DataFrame:
+    def _get_available_cloths_for_costumers(self) -> pd.DataFrame:
         """
         Returns all available cloths.
         """
@@ -43,7 +43,7 @@ class ClothsHandler:
         """
         convert cloth DataFrame to the Jinga handler.
         """
-        df = self._get_available_cloths()
+        df = self._get_available_cloths_for_costumers()
         # capitalize columns names
         df.columns = [column.capitalize() for column in df.columns]
         # add user amount choosing column
@@ -52,8 +52,8 @@ class ClothsHandler:
         return df
 
 
-def get_cloth_full_details(product_id: int, cloth_table: Dict[str, Any]) -> Dict[str, Any]:
-    df = pd.DataFrame(cloth_table)
+def get_cloth_full_details(product_id: int, cloths_table: Dict[str, Any]) -> Dict[str, Any]:
+    df = pd.DataFrame(cloths_table)
     mask = df['Id'] == product_id
     filtered_data = df[mask].to_dict(orient='records')
 
