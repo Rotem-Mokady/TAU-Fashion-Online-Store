@@ -152,3 +152,12 @@ header .logo {
     outline: none;
 }
 
+/* Update Message Style */
+.update-message {
+    margin-top: 20px;
+    color: #28a745; /* Green color for success */
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+

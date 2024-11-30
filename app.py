@@ -131,15 +131,13 @@ def admin():
 
     cloths = ClothsHandler()
     df = cloths.admin_page_df
+    table_headers, table_data = df.columns.tolist(), df.values.tolist()
 
-    table_headers = df.columns.tolist()
-    table_data = df.values.tolist()
+    update_done = session.get('update_done', default=False)
 
-    if not session.get('admin_table'):
-        table = cloths.admin_page_data_to_html
-        session['admin_table'] = table
-
-    return render_template("admin.html", username=username, table_headers=table_headers, table_data=table_data)
+    return render_template(
+        "admin.html", username=username, table_headers=table_headers, table_data=table_data, update_done=update_done
+    )
 
 
 @app.route('/admin_auth_handler')
@@ -159,15 +157,14 @@ def admin_auth_handler():
 
 @app.route('/save_cloths_table', methods=['POST'])
 def save_cloths_table():
-    current_table = session.get('admin_table')
-    if not current_table:
-        redirect(url_for("admin"))
+    cloths = ClothsHandler()
+    current_table = cloths.admin_page_data_to_html
 
     request_data: Dict = request.form
-    is_done = UpdateClothsTable(request_data=request_data, current_table=current_table).run()
-    print(is_done)
+    update_done = UpdateClothsTable(request_data=request_data, current_table=current_table).run()
 
-    return redirect(url_for('admin'))
+    session['update_done'] = update_done
+    return redirect(url_for("admin"))
 
 
 if __name__ == "__main__":

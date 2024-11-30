@@ -37,28 +37,22 @@
                             {% for cell in row %}
                                 <td>
                                     {% if table_headers[loop.index0] == 'Id' %}
-                                        <!-- Id: Editable, only digits allowed -->
                                         <input type="number" name="Id_{{ row[0] }}" value="{{ cell }}" required min="0" step="1">
                                     {% elif table_headers[loop.index0] == 'Price' %}
-                                        <!-- Price: Numeric input (int or float), min value = 0 -->
                                         <input type="number" name="Price_{{ row[0] }}" value="{{ cell }}" required min="0" step="any">
                                     {% elif table_headers[loop.index0] == 'Inventory' %}
-                                        <!-- Inventory: Numeric input (int), min value = 0 -->
                                         <input type="number" name="Inventory_{{ row[0] }}" value="{{ cell }}" required min="0">
                                     {% elif table_headers[loop.index0] == 'Campaign' %}
-                                        <!-- Campaign: Binary (dropdown) -->
                                         <select name="Campaign_{{ row[0] }}">
                                             <option value="True" {% if cell == 1 %}selected{% endif %}>True</option>
                                             <option value="False" {% if cell == 0 %}selected{% endif %}>False</option>
                                         </select>
                                     {% elif table_headers[loop.index0] == 'Sex' %}
-                                    <!-- Sex: Binary (dropdown) -->
                                         <select name="Sex_{{ row[0] }}">
                                             <option value="Men" {% if cell == 'Men' %}selected{% endif %}>Men</option>
                                             <option value="Women" {% if cell == 'Women' %}selected{% endif %}>Women</option>
                                         </select>
                                     {% else %}
-                                        <!-- General string fields: Name, Path -->
                                         <input type="text" name="{{ table_headers[loop.index0] }}_{{ row[0] }}" value="{{ cell }}" required>
                                     {% endif %}
                                 </td>
@@ -75,6 +69,11 @@
                 <button type="submit" class="submit-btn">Save Changes</button>
             </div>
         </form>
+
+        <!-- Display Update Confirmation Message -->
+        {% if update_done %}
+            <p class="update-message">Your Update Has Been Done</p>
+        {% endif %}
     </section>
 </body>
 </html>
