@@ -67,9 +67,12 @@ def home_page():
     if not username:
         return render_template("sign_in.html")
 
-    cloths = ClothsHandler()
-    table = cloths.home_page_data_to_html
-    session['home_page_table'] = table
+    if not session.get('home_page_table'):
+        cloths = ClothsHandler()
+        table = cloths.home_page_data_to_html
+        session['home_page_table'] = table
+    else:
+        table = session['home_page_table']
 
     order_summary_success_message = request.args.get('success_message', default=None)
     order_summary_info = session.get('order_summary_info', default=None)
@@ -79,8 +82,11 @@ def home_page():
         session['order_summary_info'] = None
         add_transaction_to_db(username=username, data=order_summary_info)
 
+    not_admin_message_error = request.args.get('error_message', default=None)
+
     return render_template(
-        "home_page.html", username=username, table=table, success_message=order_summary_success_message
+        "home_page.html", username=username, table=table,
+        success_message=order_summary_success_message, error_message=not_admin_message_error
     )
 
 
@@ -100,7 +106,7 @@ def order_summary():
             amount = int(request.form[key])
 
             if amount > 0:
-                product_info = get_cloth_full_details(cloth_table=home_page_table, product_id=product_id)
+                product_info = get_cloth_full_details(cloths_table=home_page_table, product_id=product_id)
                 product_summary = generate_summary_info(product_info=product_info, amount=amount)
                 table.append(product_summary)
 
@@ -132,9 +138,7 @@ def admin_auth_handler():
         return redirect(url_for("admin"))
 
     error_message = "You are not authorized to access the admin page"
-    cloth_df = home_page_handler()
-    
-    return render_template("home_page.html", username=username, error_message=error_message, table=cloth_df)
+    return redirect(url_for('home_page', error_message=error_message))
 
 
 if __name__ == "__main__":

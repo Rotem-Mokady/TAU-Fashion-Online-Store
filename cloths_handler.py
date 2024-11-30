@@ -15,6 +15,19 @@ class ClothsHandler:
         self.home_page_df = self._home_page_handler()
         self.home_page_data_to_html = self.home_page_df.to_dict(orient='records')
 
+        self.admin_page_df = self._collect_raw_data()
+        self.admin_page_data_to_html = self.admin_page_df.to_dict(orient='records')
+
+    @staticmethod
+    def _collect_raw_data() -> pd.DataFrame:
+        """
+        Returns all the data as it is.
+        """
+        query = "select * from taufashion_10.cloths order by campaign desc "
+        df = fetch_data_from_mysql(sql_statement=query)
+
+        return df
+
     def _get_available_cloths_for_costumers(self) -> pd.DataFrame:
         """
         Returns all available cloths.
