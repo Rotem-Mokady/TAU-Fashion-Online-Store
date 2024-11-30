@@ -15,16 +15,37 @@ class ClothsHandler:
         self.home_page_df = self._home_page_handler()
         self.home_page_data_to_html = self.home_page_df.to_dict(orient='records')
 
-        self.admin_page_df = self._collect_raw_data()
-        self.admin_page_data_to_html = self.admin_page_df.to_dict(orient='records')
+        self.admin_page_df = self._admin_page_handler()
 
     @staticmethod
     def _collect_raw_data() -> pd.DataFrame:
         """
         Returns all the data as it is.
         """
-        query = "select * from taufashion_10.cloths order by campaign desc "
+        query = """
+            select  c.id, 
+                    c.name,
+                    c.sex,
+                    replace(c.path, '\\\\', '\\\\\\\\') as path,
+                    c.price,
+                    c.inventory,
+                    c.campaign
+            
+            from taufashion_10.cloths c
+            
+            order by c.campaign desc
+        """
         df = fetch_data_from_mysql(sql_statement=query)
+
+        return df
+
+    def _admin_page_handler(self) -> pd.DataFrame:
+        """
+        convert cloths DataFrame to the Jinga handler.
+        """
+        df = self._collect_raw_data()
+        # capitalize columns names
+        df.columns = [column.capitalize() for column in df.columns]
 
         return df
 
@@ -54,7 +75,7 @@ class ClothsHandler:
 
     def _home_page_handler(self) -> pd.DataFrame:
         """
-        convert cloth DataFrame to the Jinga handler.
+        convert cloths DataFrame to the Jinga handler.
         """
         df = self._get_available_cloths_for_costumers()
         # capitalize columns names

@@ -18,5 +18,54 @@
             <button type="submit" class="back-btn">Back to Home Page</button>
         </form>
     </div>
+
+    <!-- Admin Table Section -->
+    <section class="admin-table-section">
+        <h2>Admin Dashboard - Editable Table</h2>
+        <form method="POST" action="{{ url_for('save_cloths_table') }}">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        {% for header in table_headers %}
+                            <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table_data %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>
+                                    {% if table_headers[loop.index0] == 'Id' %}
+                                        <!-- Id: Editable, only digits allowed -->
+                                        <input type="number" name="id_{{ loop.index }}" value="{{ cell }}" required min="0" step="1">
+                                    {% elif table_headers[loop.index0] == 'Price' %}
+                                        <!-- Price: Numeric input (int or float), min value = 0 -->
+                                        <input type="number" name="price_{{ loop.index }}" value="{{ cell }}" required min="0" step="any">
+                                    {% elif table_headers[loop.index0] == 'Inventory' %}
+                                        <!-- Inventory: Numeric input (int), min value = 0 -->
+                                        <input type="number" name="inventory_{{ loop.index }}" value="{{ cell }}" required min="0">
+                                    {% elif table_headers[loop.index0] == 'Campaign' %}
+                                        <!-- Campaign: Binary (checkbox) -->
+                                        <input type="checkbox" name="campaign_{{ loop.index }}" {% if cell == 1 %}checked{% endif %} value="1">
+                                    {% else %}
+                                        <!-- General string fields: Name, Sex, Path -->
+                                        <input type="text" name="{{ table_headers[loop.index0] | lower }}_{{ loop.index }}" value="{{ cell }}" required>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="{{ table_headers|length }}">No data available.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="submit-btn-container">
+                <button type="submit" class="submit-btn">Save Changes</button>
+            </div>
+        </form>
+    </section>
 </body>
 </html>

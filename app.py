@@ -123,7 +123,13 @@ def admin():
     if not username:
         render_template("sign_in.html")
 
-    return render_template("admin.html", username=username)
+    cloths = ClothsHandler()
+    df = cloths.admin_page_df
+
+    table_headers = df.columns.tolist()
+    table_data = df.values.tolist()
+
+    return render_template("admin.html", username=username, table_headers=table_headers, table_data=table_data)
 
 
 @app.route('/admin_auth_handler')
@@ -139,6 +145,14 @@ def admin_auth_handler():
 
     error_message = "You are not authorized to access the admin page"
     return redirect(url_for('home_page', error_message=error_message))
+
+
+@app.route('/save_cloths_table', methods=['POST'])
+def save_cloths_table():
+    data = request.form
+    print(data)
+
+    return redirect(url_for('admin'))
 
 
 if __name__ == "__main__":
