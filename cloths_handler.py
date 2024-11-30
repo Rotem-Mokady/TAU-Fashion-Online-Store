@@ -1,7 +1,9 @@
 import pandas as pd
-from typing import Dict, Any
+import datetime as dt
+from typing import List, Dict, Any
 
-from db_utils import fetch_data_from_mysql
+from db_utils import fetch_data_from_mysql, push_dataframe_to_mysql, Tables
+from auth_and_register import get_email_by_username
 
 
 class ClothsHandler:
@@ -74,7 +76,22 @@ def generate_summary_info(product_info: Dict[str, Any], amount: int) -> Dict[str
     return final_info
 
 
-def add_transaction_to_db(data: Dict[str, Any]) -> None:
-    pass
+def add_transaction_to_db(username: str, data: List[Dict[str, Any]]) -> None:
+    email = get_email_by_username(username=username)
+    current_time = dt.datetime.now()
+
+    email_and_time_unique_str = email + current_time.strftime('%d/%m/%Y %H:%M:%S')
+    transaction_id = abs(hash(email_and_time_unique_str))
+
+    data = [{
+        'id': transaction_id,
+        'user_mail': email,
+        'cloth_id': cloth_data['Id'],
+        'amount': cloth_data['Total Amount'],
+        'purchase_time': current_time
+    } for cloth_data in data]
+    df = pd.DataFrame(data)
+
+    push_dataframe_to_mysql(df=df, table_name=Tables.TRANSACTIONS)
 
 

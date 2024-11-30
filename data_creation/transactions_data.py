@@ -20,7 +20,6 @@ class TransactionsGenerator:
 
         self.min_amount_of_products_in_order, self.max_amount_of_products_in_order = 1, 5
 
-
     @staticmethod
     def _get_all_users_emails() -> List[str]:
         """

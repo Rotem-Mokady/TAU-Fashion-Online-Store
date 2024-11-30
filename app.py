@@ -1,6 +1,5 @@
 from flask import Flask, redirect, render_template, request, url_for, session
 import os
-from ast import literal_eval
 
 from auth_and_register import (
     signing_in_response, validate_email_template, validate_username_template, validate_password_template,
@@ -73,14 +72,12 @@ def home_page():
     session['home_page_table'] = table
 
     order_summary_success_message = request.args.get('success_message', default=None)
-    order_summary_info = request.args.get('order_summary_info', default=None)
+    order_summary_info = session.get('order_summary_info', default=None)
 
     # If the user accepted and he has a reservation
     if order_summary_success_message and order_summary_info:
-        success_message, data = order_summary_success_message, literal_eval(order_summary_info)
-        request.args['success_message'], request.args['order_summary_info'] = None, None
-
-        add_transaction_to_db(data=data)
+        session['order_summary_info'] = None
+        add_transaction_to_db(username=username, data=order_summary_info)
 
     return render_template(
         "home_page.html", username=username, table=table, success_message=order_summary_success_message

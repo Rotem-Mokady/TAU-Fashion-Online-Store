@@ -114,3 +114,21 @@ def is_admin(username: str) -> bool:
     df = fetch_data_from_mysql(sql_statement=statement)
     return not df.empty
 
+
+def get_email_by_username(username: str) -> str:
+    """
+    :param username: str.
+    :return: str. Email address.
+    """
+    statement = f"""
+        SELECT u.email
+        FROM taufashion_10.users u
+        WHERE u.username = '{username}'
+    """
+    df = fetch_data_from_mysql(sql_statement=statement)
+
+    if len(df) != 1:
+        raise RuntimeError()
+
+    email = df['email'][0]
+    return email

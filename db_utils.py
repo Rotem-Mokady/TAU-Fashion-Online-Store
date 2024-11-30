@@ -92,7 +92,3 @@ def run_sql_command(sql_command: str) -> None:
         print(f"Error executing SQL command: {e}")
 
 
-# if __name__ == '__main__':
-#     sql_command = "UPDATE taufashion_10.users SET password = 'Sj6mKQxM0fMr' WHERE username = 'Rotem_Mokady'"
-#     run_sql_command(sql_command)
-
