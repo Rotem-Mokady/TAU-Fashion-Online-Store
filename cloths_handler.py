@@ -200,7 +200,7 @@ class UpdateClothsTable:
             for column_name, new_value in record.items():
                 self._update_on_db(product_id=product_id, column_name=column_name, new_value=new_value)
 
-        return not filtered_df.empty
+        return not df_to_push.empty
 
 
 
