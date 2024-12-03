@@ -136,23 +136,30 @@ class UpdateClothsTable:
         """
         Push new table from managers' page to cloth table.
         """
-        self.request_data = request_data
-        self.current_table = current_table
+        self.current_table_df = pd.DataFrame(current_table)
+        self.request_data_df = self._parse_request_data(request_data=request_data)
 
     @staticmethod
-    def _comparison_handler(old_val: Any, new_val: Any, key: str) -> Union[Any, None]:
-        """
-        New value for exists difference, None otherwise.
-        """
-        if key in ('Id', 'Inventory'):
-            new_val = int(new_val)
-        elif key == 'Price':
-            new_val = float(new_val)
-        elif key == 'Campaign':
-            new_val = 1 if strtobool(new_val) else 0
+    def _parse_request_data(request_data: Dict) -> pd.DataFrame:
+        results = []
+        current_row = {}
 
-        if old_val != new_val:
-            return new_val
+        for key, val in request_data.items():
+            param, _ = key.split('_')
+            current_row[param] = val
+
+            if len(current_row) == 7:
+                results.append(current_row)
+                current_row = {}
+
+        df = pd.DataFrame(results)
+
+        df['Id'] = df['Id'].astype('int64')
+        df['Inventory'] = df['Inventory'].astype('int64')
+        df['Price'] = df['Price'].astype(float)
+        df['Campaign'] = df['Campaign'].apply(lambda x: 1 if strtobool(x) else 0)
+
+        return df
 
     @staticmethod
     def _update_on_db(product_id: int, column_name: str, new_value: Any):
@@ -169,27 +176,31 @@ class UpdateClothsTable:
         """
         Returns True if one value or more have been updated, False otherwise.
         """
-        new_values_updated_flag = False
-        # iterate each row of the old data
-        for current_row in self.current_table:
-            product_id = current_row['Id']
+        df_of_all = self.request_data_df.merge(
+            self.current_table_df, how='left', on='Id', suffixes=('_new', '_old')
+        )
 
-            # on each row, check if the new values are different
-            for key, val in current_row.items():
-                request_key = f'{key}_{product_id}'
-                new_value = self.request_data.get(request_key, default=val)
+        different_product_mask = (
+            (df_of_all['Name_old'] != df_of_all['Name_new']) |
+            (df_of_all['Sex_old'] != df_of_all['Sex_new']) |
+            (df_of_all['Path_old'] != df_of_all['Path_new']) |
+            (df_of_all['Price_old'] != df_of_all['Price_new']) |
+            (df_of_all['Inventory_old'] != df_of_all['Inventory_new']) |
+            (df_of_all['Campaign_old'] != df_of_all['Campaign_new'])
+        )
+        filtered_df = df_of_all[different_product_mask]
 
-                # update only when new value actually exists
-                new_value_to_update = self._comparison_handler(old_val=val, new_val=new_value, key=key)
-                if new_value_to_update:
-                    self._update_on_db(product_id=product_id, column_name=key, new_value=new_value_to_update)
+        relevant_fields = [col for col in filtered_df.columns if not col.endswith('_old')]
+        df_to_push = filtered_df[relevant_fields]
+        df_to_push.columns = [col.split('_')[0] for col in df_to_push.columns]
 
-                    # approve that at least one action has been done
-                    if not new_values_updated_flag:
-                        new_values_updated_flag = True
+        for record in df_to_push.to_dict(orient='records'):
+            product_id = record['Id']
 
-        return new_values_updated_flag
+            for column_name, new_value in record.items():
+                self._update_on_db(product_id=product_id, column_name=column_name, new_value=new_value)
 
+        return not filtered_df.empty
 
 
 
