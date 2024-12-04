@@ -65,11 +65,11 @@
                         {% for header in table_headers %}
                             <td>
                                 {% if header == 'Id' %}
-                                    <input type="number" name="new_Id" value="" required min="0" step="1">
+                                    <input type="number" name="new_Id" value="" min="0" step="1">
                                 {% elif header == 'Price' %}
-                                    <input type="number" name="new_Price" value="" required min="0" step="any">
+                                    <input type="number" name="new_Price" value="" min="0" step="any">
                                 {% elif header == 'Inventory' %}
-                                    <input type="number" name="new_Inventory" value="" required min="0">
+                                    <input type="number" name="new_Inventory" value="" min="0">
                                 {% elif header == 'Campaign' %}
                                     <select name="new_Campaign">
                                         <option value="True">True</option>

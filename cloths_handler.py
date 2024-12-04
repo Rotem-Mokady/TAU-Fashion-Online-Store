@@ -176,17 +176,21 @@ class UpdateClothsTable:
                     results.append(current_row)
                     current_row = {}
 
-        df = self._data_prep_request_data_df(pd.DataFrame(results))
-        return df
+        df = pd.DataFrame(results)
+        prepared_df = self._data_prep_request_data_df(df)
+
+        return prepared_df
 
     @staticmethod
     def _data_prep_request_data_df(df: pd.DataFrame) -> pd.DataFrame:
-        df['Id'] = df['Id'].astype('int64')
-        df['Inventory'] = df['Inventory'].astype('int64')
-        df['Price'] = df['Price'].astype(float)
-        df['Campaign'] = df['Campaign'].apply(lambda x: 1 if strtobool(x) else 0)
+        df_cleaned = df[~df.isin([None, '']).any(axis=1)]
 
-        return df
+        df_cleaned['Id'] = df_cleaned['Id'].astype('int64')
+        df_cleaned['Inventory'] = df_cleaned['Inventory'].astype('int64')
+        df_cleaned['Price'] = df_cleaned['Price'].astype(float)
+        df_cleaned['Campaign'] = df_cleaned['Campaign'].apply(lambda x: 1 if strtobool(x) else 0)
+
+        return df_cleaned
 
     @staticmethod
     def _update_on_db(product_id: int, column_name: str, new_value: Any):
