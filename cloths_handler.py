@@ -1,6 +1,6 @@
 import pandas as pd
 import datetime as dt
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any
 from distutils.util import strtobool
 
 from db_utils import fetch_data_from_mysql, push_dataframe_to_mysql, Tables, run_sql_command
@@ -129,6 +129,20 @@ def add_transaction_to_db(username: str, data: List[Dict[str, Any]]) -> None:
     df = pd.DataFrame(data)
 
     push_dataframe_to_mysql(df=df, table_name=Tables.TRANSACTIONS)
+
+
+def update_products_inventory(transaction_data: List[Dict[str, Any]]) -> None:
+    for cloth_data in transaction_data:
+        product_id = cloth_data['Id']
+        amount_to_subtract = cloth_data['Total Amount']
+
+        update_stm = f"""
+            update cloths
+            set inventory = inventory - {amount_to_subtract}
+            where id = {product_id}
+        """
+        run_sql_command(sql_command=update_stm)
+
 
 
 class UpdateClothsTable:

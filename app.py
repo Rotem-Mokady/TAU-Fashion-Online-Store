@@ -7,7 +7,8 @@ from auth_and_register import (
     ensure_new_user, register_new_user, is_admin, ensure_minimum_age
 )
 from cloths_handler import (
-    ClothsHandler, get_cloth_full_details, generate_summary_info, add_transaction_to_db, UpdateClothsTable
+    ClothsHandler, get_cloth_full_details, generate_summary_info, add_transaction_to_db, update_products_inventory,
+    UpdateClothsTable
 )
 
 app = Flask(__name__)
@@ -92,7 +93,13 @@ def home_page():
     # If the user accepted and he has a reservation
     if order_summary_success_message and order_summary_info:
         session['order_summary_info'] = None
+
         add_transaction_to_db(username=username, data=order_summary_info)
+        update_products_inventory(transaction_data=order_summary_info)
+
+        cloths = ClothsHandler()
+        table = cloths.home_page_data_to_html
+        session['home_page_table'] = table
 
     not_admin_message_error = request.args.get('error_message', default=None)
 
