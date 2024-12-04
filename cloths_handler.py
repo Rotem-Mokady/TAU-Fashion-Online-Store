@@ -144,7 +144,6 @@ def update_products_inventory(transaction_data: List[Dict[str, Any]]) -> None:
         run_sql_command(sql_command=update_stm)
 
 
-
 class UpdateClothsTable:
     def __init__(self, request_data: Dict, current_table: List[Dict[str, Any]]) -> None:
         """
@@ -153,21 +152,35 @@ class UpdateClothsTable:
         self.current_table_df = pd.DataFrame(current_table)
         self.request_data_df = self._parse_request_data(request_data=request_data)
 
-    @staticmethod
-    def _parse_request_data(request_data: Dict) -> pd.DataFrame:
+    def _parse_request_data(self, request_data: Dict) -> pd.DataFrame:
         results = []
         current_row = {}
 
         for key, val in request_data.items():
-            param, _ = key.split('_')
-            current_row[param] = val
 
-            if len(current_row) == 7:
-                results.append(current_row)
-                current_row = {}
+            if not key.startswith('new_'):
+                param, _ = key.split('_')
+                current_row[param] = val
 
-        df = pd.DataFrame(results)
+                if len(current_row) == 7:
+                    current_row['is_unfamiliar'] = 0
+                    results.append(current_row)
+                    current_row = {}
 
+            else:
+                _, param = key.split('_')
+                current_row[param] = val
+
+                if len(current_row) == 7:
+                    current_row['is_unfamiliar'] = 1
+                    results.append(current_row)
+                    current_row = {}
+
+        df = self._data_prep_request_data_df(pd.DataFrame(results))
+        return df
+
+    @staticmethod
+    def _data_prep_request_data_df(df: pd.DataFrame) -> pd.DataFrame:
         df['Id'] = df['Id'].astype('int64')
         df['Inventory'] = df['Inventory'].astype('int64')
         df['Price'] = df['Price'].astype(float)
@@ -206,13 +219,20 @@ class UpdateClothsTable:
 
         relevant_fields = [col for col in filtered_df.columns if not col.endswith('_old')]
         df_to_push = filtered_df[relevant_fields]
-        df_to_push.columns = [col.split('_')[0] for col in df_to_push.columns]
+        df_to_push.columns = [col.replace('_new', '') for col in df_to_push.columns]
 
-        for record in df_to_push.to_dict(orient='records'):
+        is_unfamiliar_mask = df_to_push['is_unfamiliar'] == 1
+        unfamiliar_products_df = df_to_push[is_unfamiliar_mask].drop('is_unfamiliar', axis=1)
+        familiar_products_df = df_to_push[~is_unfamiliar_mask].drop('is_unfamiliar', axis=1)
+
+        for record in familiar_products_df.to_dict(orient='records'):
             product_id = record['Id']
 
             for column_name, new_value in record.items():
                 self._update_on_db(product_id=product_id, column_name=column_name, new_value=new_value)
+
+        if not unfamiliar_products_df.empty:
+            push_dataframe_to_mysql(df=unfamiliar_products_df, table_name=Tables.CLOTHS)
 
         return not df_to_push.empty
 

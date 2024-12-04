@@ -58,11 +58,34 @@
                                 </td>
                             {% endfor %}
                         </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="{{ table_headers|length }}">No data available.</td>
-                        </tr>
                     {% endfor %}
+
+                    <!-- Empty Row for Adding New Entry -->
+                    <tr>
+                        {% for header in table_headers %}
+                            <td>
+                                {% if header == 'Id' %}
+                                    <input type="number" name="new_Id" value="" required min="0" step="1">
+                                {% elif header == 'Price' %}
+                                    <input type="number" name="new_Price" value="" required min="0" step="any">
+                                {% elif header == 'Inventory' %}
+                                    <input type="number" name="new_Inventory" value="" required min="0">
+                                {% elif header == 'Campaign' %}
+                                    <select name="new_Campaign">
+                                        <option value="True">True</option>
+                                        <option value="False">False</option>
+                                    </select>
+                                {% elif header == 'Sex' %}
+                                    <select name="new_Sex">
+                                        <option value="Men">Men</option>
+                                        <option value="Women">Women</option>
+                                    </select>
+                                {% else %}
+                                    <input type="text" name="new_{{ header }}" value="">
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
                 </tbody>
             </table>
             <div class="submit-btn-container">
