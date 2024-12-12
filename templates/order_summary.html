@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Summary - TAU Fashion Online Store</title>
+    <!-- Link to the external CSS file for Order Summary -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/order_summary.css') }}">
 </head>
 <body>
     <header>
+        <!-- Link to the external PNG file of TAUFashion's logo -->
         <img src="{{ url_for('static', filename='images/black_logo.png') }}" alt="Black Logo" class="logo">
         <h1>Hello, {{ username }}! Here is Your Order Summary</h1>
+        <!-- Send username to admin_auth_handler Flask route, to check if it's an admin -->
         <form action="{{ url_for('admin_auth_handler') }}">
             <input type="hidden" name="username" value="{{ username }}">
             <button type="submit" class="admin-btn">Admin Page</button>
         </form>
     </header>
 
-    <!-- Display the error message if it exists -->
+     <!-- Display the error message if the user is not an admin and he tried to move to admins' page -->
     {% if error_message %}
         <p class="error-message">{{ error_message }}</p>
     {% endif %}
@@ -24,7 +27,7 @@
     <div class="container mt-5">
         <h1>Your Order Summary</h1>
         <div class="table-container">
-            <!-- Display table with the order summary -->
+            <!-- Display table with the order summary from order_summary Flask route-->
             <form action="{{ url_for('order_summary') }}" method="POST">
                 <table>
                     <thead>
@@ -62,6 +65,8 @@
     <input type="checkbox" id="modal-toggle">
 
     <!-- Modal -->
+    <!-- Make sure that the user actually wants to make an order -->
+    <!-- If his answer is Yes, send him back to home page with an appropriate success message -->
     <div class="modal">
         <div class="modal-content">
             <h2>Are You Sure?</h2>

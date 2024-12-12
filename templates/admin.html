@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page</title>
+    <!-- Link to the external CSS file for Admin Page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
     <header>
+        <!-- Link to the external PNG file of TAUFashion's logo -->
         <img src="{{ url_for('static', filename='images/black_logo.png') }}" alt="Black Logo" class="logo">
         <h1 class="admin-header">Hello Admin {{ username }}!</h1>
     </header>
 
     <!-- Back to Home Page Button -->
+    <!-- Send username to home_page Flask route if he wants to go back to home page -->
     <div class="admin-btn-container">
         <form action="{{ url_for('home_page') }}" method="GET">
             <button type="submit" class="back-btn">Back to Home Page</button>
@@ -22,6 +25,7 @@
     <!-- Admin Table Section -->
     <section class="admin-table-section">
         <h2>Cloths Inventory - Editable Table</h2>
+        <!-- Send user's new table to save_cloths_table Flask route -->
         <form method="POST" action="{{ url_for('save_cloths_table') }}">
             <table class="admin-table">
                 <thead>
@@ -60,7 +64,7 @@
                         </tr>
                     {% endfor %}
 
-                    <!-- Empty Row for Adding New Entry -->
+                    <!-- Empty row for adding new product -->
                     <tr>
                         {% for header in table_headers %}
                             <td>
@@ -94,13 +98,13 @@
             <div class="missing-values-note">
                 New records with missing values won't be added to inventory.
             </div>
-
+            <!-- Save changes button -->
             <div class="submit-btn-container">
                 <button type="submit" class="submit-btn">Save Changes</button>
             </div>
         </form>
 
-        <!-- Display Update Confirmation Message -->
+        <!-- Display update confirmation message if exists-->
         {% if update_done %}
             <p class="update-message">Your Update Has Been Done</p>
         {% endif %}

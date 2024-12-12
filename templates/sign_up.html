@@ -10,8 +10,10 @@
 <body>
 
 <div class="container">
+     <!-- Link to the external PNG file of TAUFashion's logo -->
     <img src="{{ url_for('static', filename='images/white_logo.png') }}" alt="TAUFashion Logo" class="logo">
     <h2>Sign Up</h2>
+    <!-- Send user's request parameters to sign_up_registration_handler Flask route-->
     <form action="{{ url_for('sign_up_registration_handler') }}" method="POST">
         <div class="form-group">
             <label for="email">Email</label>
@@ -54,6 +56,7 @@
     {% if error_message %}
         <p style="color: red;">{{ error_message }}</p>
     {% endif %}
+    <!-- Move to Sign In page button -->
     <div class="form-footer">
         <p>Already have an account? <a href="{{ url_for('sign_in') }}">Sign In</a></p>
     </div>

@@ -4,26 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TAU Fashion Online Store</title>
+    <!-- Link to the external CSS file for Home Page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home_page.css') }}">
 </head>
 <body>
     <header>
+        <!-- Link to the external PNG file of TAUFashion's logo -->
         <img src="{{ url_for('static', filename='images/black_logo.png') }}" alt="Black Logo" class="logo">
         <h1>Hello, {{ username }}! Welcome to TAU Fashion Online Store!</h1>
+        <!-- Send username to admin_auth_handler Flask route, to check if it's an admin -->
         <form action="{{ url_for('admin_auth_handler') }}">
             <input type="hidden" name="username" value="{{ username }}">
             <button type="submit" class="admin-btn">Admin Page</button>
         </form>
     </header>
 
-    <!-- Display the success message if it exists -->
+    <!-- Display the success message of an order process if it exists -->
     {% if success_message %}
         <div class="success-message">
             <p>{{ success_message }}</p>
         </div>
     {% endif %}
 
-    <!-- Display the error message if it exists -->
+    <!-- Display the error message if the user is not an admin and he tried to move to admins' page -->
     {% if error_message %}
         <p class="error-message">{{ error_message }}</p>
     {% endif %}
@@ -31,7 +34,8 @@
     <div class="container mt-5">
         <h1>Available Products In The Store</h1>
         <div class="table-container">
-            <!-- Display table with the dataframe -->
+            <!-- Display table of the available products -->
+            <!-- Send user's order parameters to order_summary Flask route -->
             <form action="{{ url_for('order_summary') }}" method="POST">
                 <table>
                     <thead>
@@ -47,13 +51,13 @@
                     <tbody>
                         {% for row in table %}
                             <tr>
-                                <!-- Make the "Id" clickable to redirect to the path -->
+                                <!-- Make the "Id" clickable to redirect to the appropriate image path -->
                                 <td><a href="{{ row['Path'] }}">{{ row['Id'] }}</a></td>
                                 <td>{{ row['Name'] }}</td>
                                 <td>{{ row['Sex'] }}</td>
                                 <td>{{ row['Price'] }}</td>
                                 <td>{{ row['Inventory'] }}</td>
-                                <!-- Editable "Your Order" field -->
+                                <!-- Make "Your Order" field editable -->
                                 <td>
                                     <input type="number" name="product_{{ row['Id'] }}" value="{{ row['Your Order'] }}" min="0" max="{{ row['Inventory'] }}" step="1">
                                 </td>
@@ -61,7 +65,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <!-- Updated Button Wrapper -->
+                <!-- Go to Checkout Button -->
                 <div class="checkout-btn-container">
                     <button type="submit" class="checkout-btn">Go To Checkout</button>
                 </div>
