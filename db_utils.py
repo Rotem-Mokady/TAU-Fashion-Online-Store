@@ -18,7 +18,7 @@ class Tables:
     TRANSACTIONS = "transactions"
 
 
-def create_mysql_engine() -> Engine:
+def _create_mysql_engine() -> Engine:
     """
     :return: general MySQL engine to TAUFashion's schema.
     """
@@ -38,7 +38,7 @@ def fetch_data_from_mysql(sql_statement: str) -> Union[pd.DataFrame, None]:
     :return: pd.DataFrame.
     """
     try:
-        engine = create_mysql_engine()
+        engine = _create_mysql_engine()
         df = pd.read_sql(sql_statement, engine)
 
         return df
@@ -63,7 +63,7 @@ def push_dataframe_to_mysql(
     """
     try:
         # Create a connection to the MySQL database
-        engine = create_mysql_engine()
+        engine = _create_mysql_engine()
 
         # Push the dataframe to the table
         df.to_sql(name=table_name, con=engine, if_exists=if_exists, index=False)
@@ -80,7 +80,7 @@ def run_sql_command(sql_command: str) -> None:
     """
     try:
         # create a connection to the MySQL database
-        engine = create_mysql_engine()
+        engine = _create_mysql_engine()
         # establish a connection to the database using the engine
         with engine.connect() as connection:
             # Execute the provided SQL command

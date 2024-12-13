@@ -6,32 +6,6 @@ import pandas as pd
 from db_utils import fetch_data_from_mysql, push_dataframe_to_mysql, Tables
 
 
-def signing_in_response(username: str, password: str) -> bool:
-    """
-    The function checks if the username and password are familiar or not, based on our store's DB.
-
-    :param username: str.
-    :param password: str.
-    :return: bool. True if exists, False if not.
-    """
-    # create an appropriate SQL query and fetch the results from the DB
-    statement = f"""
-    SELECT *
-    FROM taufashion_10.users u
-    WHERE u.username = '{username}' AND u.password = '{password}'
-    """
-    df = fetch_data_from_mysql(sql_statement=statement)
-
-    # False if the user is not familiar, True if he is
-    # note that we expect only to one or zero records exactly
-    if df.empty:
-        return False
-    elif len(df) == 1:
-        return True
-    else:
-        raise RuntimeError()
-
-
 def validate_email_template(email: str) -> bool:
     """
     correct email must to end with '.com' suffix, include '@' and start with a letter.
@@ -121,41 +95,3 @@ def register_new_user(request_data: Dict[str, Any]) -> None:
     push_dataframe_to_mysql(df=df, table_name=Tables.USERS)
 
 
-def is_admin(username: str) -> bool:
-    """
-    :param username: str.
-    :return: bool. True if the user is defined as admin, otherwise False.
-    """
-    # create an appropriate SQL query and fetch the results from the DB
-    statement = f"""
-            SELECT *
-            FROM taufashion_10.users u
-            WHERE u.username = '{username}' AND u.is_manager = 1
-        """
-
-    df = fetch_data_from_mysql(sql_statement=statement)
-
-    # the user is a manager only if he has the appropriate flag in the DB, otherwise he is a regular user
-    return not df.empty
-
-
-def get_email_by_username(username: str) -> str:
-    """
-    :param username: str.
-    :return: str. Email address.
-    """
-    # create an appropriate SQL query and fetch the results from the DB
-    statement = f"""
-        SELECT u.email
-        FROM taufashion_10.users u
-        WHERE u.username = '{username}'
-    """
-    df = fetch_data_from_mysql(sql_statement=statement)
-
-    # note that we expect to only one record exactly
-    if len(df) != 1:
-        raise RuntimeError()
-
-    # extract the email and return it
-    email = df['email'][0]
-    return email

@@ -2,14 +2,17 @@ from flask import Flask, redirect, render_template, request, url_for, session
 import os
 from typing import Dict
 
-from auth_and_register import (
-    signing_in_response, validate_email_template, validate_username_template, validate_password_template,
-    ensure_new_user, register_new_user, is_admin, ensure_minimum_age
+from register_utils import (
+    validate_email_template, validate_username_template, validate_password_template,
+    ensure_new_user, register_new_user, ensure_minimum_age
 )
-from cloths_handler import (
-    ClothsHandler, get_cloth_full_details, generate_summary_info, add_transaction_to_db, update_products_inventory,
-    UpdateClothsTable
+from auth_utils import signing_in_response, is_admin
+from cloths_data_handler import (
+    ClothsDataCollection
 )
+from admins_updating_handler import UpdateClothsTable
+from order_summary_utils import get_product_full_details, generate_summary_info, add_transaction_to_db, \
+    update_products_inventory
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -98,7 +101,7 @@ def home_page():
 
     # collect the data of the products from the DB or from the session if exists
     if not session.get('home_page_table'):
-        cloths = ClothsHandler()
+        cloths = ClothsDataCollection()
         table = cloths.home_page_data_to_html
         session['home_page_table'] = table
     else:
@@ -119,7 +122,7 @@ def home_page():
 
         # now we need to show a different data about the inventory
         # collect the data from the DB again and store in the session
-        cloths = ClothsHandler()
+        cloths = ClothsDataCollection()
         table = cloths.home_page_data_to_html
         session['home_page_table'] = table
 
@@ -154,7 +157,7 @@ def order_summary():
             # only if the user actually wants one cloth or more of it's product
             if amount > 0:
                 # collect and prepared all relevant details of the product and add them to the final order table
-                product_info = get_cloth_full_details(cloths_table=home_page_table, product_id=product_id)
+                product_info = get_product_full_details(cloths_table=home_page_table, product_id=product_id)
                 product_summary = generate_summary_info(product_info=product_info, amount=amount)
                 table.append(product_summary)
 
@@ -175,7 +178,7 @@ def admin():
         render_template("sign_in.html")
 
     # collect products information directly from the DB
-    cloths = ClothsHandler()
+    cloths = ClothsDataCollection()
     df = cloths.admin_page_df
     table_headers, table_data = df.columns.tolist(), df.values.tolist()
 
@@ -209,7 +212,7 @@ def admin_auth_handler():
 @app.route('/save_cloths_table', methods=['POST'])
 def save_cloths_table():
     # collect products information directly from the DB
-    cloths = ClothsHandler()
+    cloths = ClothsDataCollection()
     current_table = cloths.admin_page_data_to_html
 
     # update the DB if needed
