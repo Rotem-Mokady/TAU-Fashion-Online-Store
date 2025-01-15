@@ -175,7 +175,7 @@ def admin():
     # go back to sign in page if the username is not familiar in the session
     username = session.get('username')
     if not username:
-        render_template("sign_in.html")
+        return render_template("sign_in.html")
 
     # collect products information directly from the DB
     cloths = ClothsDataCollection()
@@ -195,7 +195,7 @@ def admin_auth_handler():
     # go back to sign in page if the username is not familiar in the session
     username = session.get('username')
     if not username:
-        render_template("sign_in.html")
+        return render_template("sign_in.html")
 
     # check if the user is an admin or not
     is_admin_flag = is_admin(username)
