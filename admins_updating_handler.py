@@ -66,14 +66,10 @@ class _ParseRequestData:
 
         return df_cleaned
 
-    @classmethod
-    def user_request_parser(cls, request_data: Dict) -> pd.DataFrame:
-        # get instance
-        request_handler = cls(request_data=request_data)
-        # parse results
-        results = request_handler._parse_request()
+    def user_request_parser(self) -> pd.DataFrame:
+        results = self._parse_request()
         df = pd.DataFrame(results)
-        prepared_data = request_handler._data_prep_request_data_df(df=df)
+        prepared_data = self._data_prep_request_data_df(df=df)
 
         return prepared_data
 
@@ -86,7 +82,7 @@ class UpdateClothsTable(_ParseRequestData):
         super().__init__(request_data=request_data)
 
         self.current_table_df = pd.DataFrame(current_table)
-        self.request_data_df = self.user_request_parser(request_data=request_data)
+        self.request_data_df = self.user_request_parser()
 
     @staticmethod
     def _update_on_db(product_id: int, column_name: str, new_value: Any) -> None:

@@ -184,6 +184,7 @@ def admin():
 
     # collect the current update status (True if the user actually changed something, otherwise False)
     update_done = session.get('update_done', default=False)
+
     # go the admins HTML template, send all relevant variables
     return render_template(
         "admin.html", username=username, table_headers=table_headers, table_data=table_data, update_done=update_done
