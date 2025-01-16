@@ -105,7 +105,6 @@ class UpdateClothsTable(_ParseRequestData):
         # generate mask for finding changes between the two datasets and create a new filtered dataset
         different_product_mask = (
                 (df['Name_old'] != df['Name_new']) |
-                (df['Sex_old'] != df['Sex_new']) |
                 (df['Path_old'] != df['Path_new']) |
                 (df['Price_old'] != df['Price_new']) |
                 (df['Inventory_old'] != df['Inventory_new']) |
