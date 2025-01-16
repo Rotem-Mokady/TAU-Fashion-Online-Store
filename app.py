@@ -152,14 +152,16 @@ def order_summary():
 
             # extract the product id and the amount of it in the current order
             product_id = int(key.split('_')[1])
-            amount = int(request.form[key])
+            amount = float(request.form[key])
 
-            # only if the user actually wants one cloth or more of it's product
-            if amount > 0:
-                # collect and prepared all relevant details of the product and add them to the final order table
-                product_info = get_product_full_details(cloths_table=home_page_table, product_id=product_id)
-                product_summary = generate_summary_info(product_info=product_info, amount=amount)
-                table.append(product_summary)
+            # buy only if the user actually wants one cloth or more of it's product (only integers allowed)
+            if int(amount) != amount or amount <= 0:
+                continue
+
+            # collect and prepared all relevant details of the product and add them to the final order table
+            product_info = get_product_full_details(cloths_table=home_page_table, product_id=product_id)
+            product_summary = generate_summary_info(product_info=product_info, amount=int(amount))
+            table.append(product_summary)
 
     # only if there is an actual order, get progress to order summary page
     if table:
