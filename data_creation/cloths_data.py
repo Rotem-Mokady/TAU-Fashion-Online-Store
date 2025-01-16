@@ -6,7 +6,7 @@ import pandas as pd
 
 COLORS = ['red', 'blue', 'green', 'black', 'white', 'yellow', 'purple', 'pink', 'grey', 'brown']
 SEX = ['Men', 'Women']
-CLOTHING_TYPES = ['shirt', 'pants']
+CLOTHING_TYPES = ['shirt']
 
 
 def _generate_random_id() -> int:

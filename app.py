@@ -99,8 +99,13 @@ def home_page():
     if not username:
         return render_template("sign_in.html")
 
-    # collect the data of the products from the DB or from the session if exists
-    if not session.get('home_page_table'):
+    # if an update already done by a manager, next time the message won't appear
+    update_done = session.get('update_done', default=False)
+    if update_done:
+        session['update_done'] = False
+
+    # collect the data of the products from the DB if an update has been done or if the session is empty
+    if update_done or not session.get('home_page_table'):
         cloths = ClothsDataCollection()
         table = cloths.home_page_data_to_html
         session['home_page_table'] = table
@@ -167,9 +172,9 @@ def order_summary():
     if table:
         session['order_summary_info'] = table
         return render_template("order_summary.html", username=username, table=table)
-    # otherwise go back to home page
+    # otherwise go back to admin page
     else:
-        return redirect(url_for('home_page'))
+        return redirect(url_for('admin'))
 
 
 @app.route('/admin')
@@ -179,13 +184,13 @@ def admin():
     if not username:
         return render_template("sign_in.html")
 
+    # collect the current update status (True if the user actually changed something, otherwise False)
+    update_done = session.get('update_done', default=False)
+
     # collect products information directly from the DB
     cloths = ClothsDataCollection()
     df = cloths.admin_page_df
     table_headers, table_data = df.columns.tolist(), df.values.tolist()
-
-    # collect the current update status (True if the user actually changed something, otherwise False)
-    update_done = session.get('update_done', default=False)
 
     # go the admins HTML template, send all relevant variables
     return render_template(
