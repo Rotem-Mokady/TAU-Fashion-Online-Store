@@ -11,7 +11,6 @@ class ClothsSqlStatements:
         return """
             SELECT  c.id, 
                     c.name,
-                    c.sex,
                     replace(c.path, '\\\\', '\\\\\\\\') as path,
                     c.price,
                     c.inventory,
@@ -29,7 +28,6 @@ class ClothsSqlStatements:
         return """
             SELECT  c.id, 
                     c.name,
-                    c.sex,
                     c.price,
                     c.inventory,
                     replace(c.path, '\\\\', '\\\\\\\\') as path
