@@ -51,11 +51,6 @@
                                             <option value="True" {% if cell == 1 %}selected{% endif %}>True</option>
                                             <option value="False" {% if cell == 0 %}selected{% endif %}>False</option>
                                         </select>
-                                    {% elif table_headers[loop.index0] == 'Sex' %}
-                                        <select name="Sex_{{ row[0] }}">
-                                            <option value="Men" {% if cell == 'Men' %}selected{% endif %}>Men</option>
-                                            <option value="Women" {% if cell == 'Women' %}selected{% endif %}>Women</option>
-                                        </select>
                                     {% else %}
                                         <input type="text" name="{{ table_headers[loop.index0] }}_{{ row[0] }}" value="{{ cell }}" required>
                                     {% endif %}
@@ -78,12 +73,6 @@
                                     <select name="new_Campaign">
                                         <option value="True">True</option>
                                         <option value="False" selected>False</option>
-                                    </select>
-
-                                {% elif header == 'Sex' %}
-                                    <select name="new_Sex">
-                                        <option value="Men">Men</option>
-                                        <option value="Women">Women</option>
                                     </select>
                                 {% else %}
                                     <input type="text" name="new_{{ header }}" value="">
