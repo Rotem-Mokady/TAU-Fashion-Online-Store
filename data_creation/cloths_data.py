@@ -5,7 +5,6 @@ import pandas as pd
 
 
 COLORS = ['red', 'blue', 'green', 'black', 'white', 'yellow', 'purple', 'pink', 'grey', 'brown']
-SEX = ['Men', 'Women']
 CLOTHING_TYPES = ['shirt']
 
 
@@ -21,13 +20,6 @@ def _generate_random_color() -> str:
     :return: str. A random color from close list.
     """
     return random.choice(COLORS)
-
-
-def _generate_sex() -> str:
-    """
-    :return: str. Randomly pick sex.
-    """
-    return random.choice(SEX)
 
 
 def _generate_random_price() -> int:
@@ -60,7 +52,6 @@ def _generate_cloth_data() -> Dict[str, Any]:
     :return: dict.
     """
     _id = _generate_random_id()
-    sex = _generate_sex()
 
     color, clothing_type = _generate_random_color(), random.choice(CLOTHING_TYPES)
     name = f"{color} {clothing_type}"
@@ -68,11 +59,10 @@ def _generate_cloth_data() -> Dict[str, Any]:
     data = {
         'id': _id,
         'name': name,
-        'sex': sex,
         'campaign': _generate_campaign_flag(),
         'price': _generate_random_price(),
         'inventory': _generate_random_inventory(),
-        'path': f"{sex}\\{name}\\{_id}"
+        'path': f"{name}\\{_id}"
     }
 
     return data
