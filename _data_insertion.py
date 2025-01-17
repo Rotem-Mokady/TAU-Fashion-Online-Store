@@ -16,7 +16,7 @@ def users_data_handler() -> None:
     managers_data, regular_users_data = get_managers_data(), get_regular_users_data()
     all_users_data = pd.concat([managers_data, regular_users_data], ignore_index=True)
 
-    PushToSql(df=all_users_data, table_name=Tables.USERS).run(debug_mode=True, to_excel=False)
+    PushToSql(df=all_users_data, table_name=Tables.USERS).run(debug_mode=False, to_excel=True)
 
 
 def cloths_data_handler() -> None:
@@ -25,16 +25,18 @@ def cloths_data_handler() -> None:
     """
     data = get_cloths_data()
 
-    PushToSql(df=data, table_name=Tables.CLOTHS).run(debug_mode=True, to_excel=False)
+    PushToSql(df=data, table_name=Tables.CLOTHS).run(debug_mode=False, to_excel=True)
 
 
 def transactions_data_handler() -> None:
     """
     handle transactions data.
     """
-    data = TransactionsGenerator(orders_num=2000).generate_orders()
+    data = TransactionsGenerator(orders_num=1000).main()
+    transactions_df, items_df = data['transaction_data'], data['items_data']
 
-    PushToSql(df=data, table_name=Tables.TRANSACTIONS).run(debug_mode=True, to_excel=False)
+    PushToSql(df=transactions_df, table_name=Tables.TRANSACTIONS).run(debug_mode=False, to_excel=True)
+    PushToSql(df=items_df, table_name=Tables.ITEMS).run(debug_mode=False, to_excel=True)
 
 
 if __name__ == '__main__':

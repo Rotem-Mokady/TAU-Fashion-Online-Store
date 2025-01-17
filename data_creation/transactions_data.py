@@ -25,7 +25,7 @@ class TransactionsGenerator:
         """
         :return: list. All users in one list.
         """
-        emails = get_unique_column_values(file_path="data\\users.xlsx", column_name='email')
+        emails = get_unique_column_values(file_path="data_creation\\data\\users.xlsx", column_name='email')
         return emails
 
     @staticmethod
@@ -33,7 +33,7 @@ class TransactionsGenerator:
         """
         :return: list. All cloths ids in one list.
         """
-        cloths_ids = get_unique_column_values(file_path="data\\cloths.xlsx", column_name='id')
+        cloths_ids = get_unique_column_values(file_path="data_creation\\data\\cloths.xlsx", column_name='id')
         return cloths_ids
 
     @staticmethod
@@ -54,64 +54,80 @@ class TransactionsGenerator:
         )
         return random_time
 
-    @staticmethod
-    def _create_order_id(email: str, purchase_time: dt.datetime) -> int:
+    def _generate_transaction(self) -> Dict[str, Any]:
         """
-        generate unique order id, based on user's email and the time of his order.
-        :param email: str.
-        :param purchase_time: datetime.
-        :return: int. Unique order id.
+        generate transaction with random email address and random times.
+        :return: dict.
         """
-        # combine the two words into a single string
-        combined = email + purchase_time.strftime('%d/%m/%Y %H:%M:%S')
-        # use the hash function to create a hash value
-        hashed_value = abs(hash(combined))
+        return {
+            'user_mail': random.choice(self.emails),
+            'purchase_time': self._generate_random_time()
+        }
 
-        return hashed_value
-
-    def _generate_order(self) -> List[Dict[str, Any]]:
+    def _get_transactions(self) -> pd.DataFrame:
         """
-        :return: list. An example an order.
+        generate transactions and give a unique id for each.
+        :return: pd.Dataframe.
         """
-        # set all relevant details to create an order
-        email, purchase_time = random.choice(self.emails), self._generate_random_time()
-        order_id = self._create_order_id(email=email, purchase_time=purchase_time)
+        df = pd.DataFrame([self._generate_transaction() for _ in range(self.orders_num)])
+        # sort the data according to the time
+        sorted_df = df.sort_values('purchase_time', ascending=True).reset_index(drop=True)
 
-        # set the number of products in order
-        transactions_num = random.randint(self.min_amount_of_products_in_order, self.max_amount_of_products_in_order)
+        # add transaction id
+        sorted_df.index.name = 'id'
+        final_df = sorted_df.reset_index(drop=False)
+        # start from 1
+        final_df['id'] = final_df['id'].apply(lambda x: x + 1)
 
-        cloth_ids = deepcopy(self.cloths_ids)
-        all_transactions_in_order = []
+        return final_df
 
-        for _ in range(transactions_num):
-            # choose a random cloth id and remove it from the list of all
-            cloth_id_random_index = random.randint(0, len(cloth_ids) - 1)
-            chosen_cloth_id = cloth_ids.pop(cloth_id_random_index)
+    def _generate_item_in_transaction(self, transaction_id: int, cloth_id: int) -> Dict[str, Any]:
+        """
+        generate product that ordered in specific transaction with an amount.
+        :return: dict.
+        """
+        return {
+            'transaction_id': transaction_id,
+            'cloth_id': cloth_id,
+            'amount': self._generate_random_amount()
+        }
 
-            # create transaction and insert it to the order list
-            transaction = {
-                'id': order_id,
-                'user_mail': email,
-                'cloth_id': chosen_cloth_id,
-                'amount': self._generate_random_amount(),
-                'purchase_time': purchase_time
-            }
-            all_transactions_in_order.append(transaction)
-
-        return all_transactions_in_order
-
-    def generate_orders(self) -> pd.DataFrame:
+    def main(self) -> Dict[str, pd.DataFrame]:
         """
         generate random orders.
 
         :return: pd.DataFrame.
         """
-        orders = []
-        for _ in range(self.orders_num):
-            order = self._generate_order()
-            orders += order
+        # transactions data
+        transactions_df = self._get_transactions()
 
-        return pd.DataFrame(orders)
+        items_data = []
+        # create an actual order for each transaction
+        for transaction_id in transactions_df['id']:
+
+            # set the number of products in order
+            items_num = random.randint(self.min_amount_of_products_in_order, self.max_amount_of_products_in_order)
+            # get a list of all available products
+            cloth_ids = deepcopy(self.cloths_ids)
+
+            for _ in range(items_num):
+                # choose a random cloth id and remove it from the list of all
+                cloth_id_random_index = random.randint(0, len(cloth_ids) - 1)
+                chosen_cloth_id = cloth_ids.pop(cloth_id_random_index)
+
+                # add to the full list
+                item_in_transaction = self._generate_item_in_transaction(
+                    transaction_id=transaction_id, cloth_id=chosen_cloth_id
+                )
+                items_data.append(item_in_transaction)
+
+        # items data
+        items_df = pd.DataFrame(items_data)
+
+        return {
+            'transaction_data': transactions_df,
+            'items_data': items_df
+        }
 
 
 

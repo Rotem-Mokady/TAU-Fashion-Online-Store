@@ -16,6 +16,7 @@ class Tables:
     USERS = "users"
     CLOTHS = "cloths"
     TRANSACTIONS = "transactions"
+    ITEMS = "transaction_to_items"
 
 
 def _create_mysql_engine() -> Engine:
