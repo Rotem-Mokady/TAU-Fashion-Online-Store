@@ -77,6 +77,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    margin-bottom: 30px; /* Added margin bottom to add space between table and 'Total Price' */
 }
 
 table th, table td {
@@ -106,9 +107,14 @@ table td, table th {
     transition: background-color 0.3s;
 }
 
+/* Total Price */
+h1 + h1 { /* Target the second h1 (Total Price) */
+    margin-top: 30px; /* Added margin-top to add space above 'Total Price' */
+}
+
 /* Checkout Button Container */
 .checkout-btn-container {
-    margin-top: 20px;
+    margin-top: 30px; /* Increased margin-top for more space between 'Total Price' and button */
 }
 
 /* Checkout Button */
@@ -189,4 +195,3 @@ table td, table th {
 #modal-toggle:checked + .modal {
     display: block;
 }
-
