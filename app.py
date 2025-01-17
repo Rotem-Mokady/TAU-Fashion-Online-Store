@@ -11,7 +11,7 @@ from cloths_data_handler import (
     ClothsDataCollection
 )
 from admins_updating_handler import UpdateClothsTable
-from order_summary_utils import get_product_full_details, generate_summary_info, add_transaction_to_db, \
+from order_summary_utils import get_product_full_details, generate_summary_info, AddTransaction, \
     update_products_inventory
 
 app = Flask(__name__)
@@ -120,8 +120,9 @@ def home_page():
     if order_summary_success_message and order_summary_info:
         # set a new order with no products on the following order
         session['order_summary_info'] = None
+
         # create a new transaction and insert it to the DB
-        add_transaction_to_db(username=username, data=order_summary_info)
+        AddTransaction(username=username, items_data=order_summary_info).run()
         # subtract the ordered amount of each product from it's total inventory, and update in the DB
         update_products_inventory(transaction_data=order_summary_info)
 

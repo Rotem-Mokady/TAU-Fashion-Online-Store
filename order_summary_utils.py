@@ -64,30 +64,69 @@ def _get_email_by_username(username: str) -> str:
     return email
 
 
-def add_transaction_to_db(username: str, data: List[Dict[str, Any]]) -> None:
+class AddTransaction:
     """
     Add to the DB the new transactions of the user
     """
-    # get email and the current time
-    email = _get_email_by_username(username=username)
-    current_time = dt.datetime.now()
+    def __init__(self, username: str, items_data: List[Dict[str, Any]]) -> None:
 
-    # generate an unique id for the order
-    email_and_time_unique_str = email + current_time.strftime('%d/%m/%Y %H:%M:%S')
-    transaction_id = abs(hash(email_and_time_unique_str))
+        # get email and the current time
+        self._email = _get_email_by_username(username=username)
+        self._current_time = dt.datetime.now()
 
-    # generate all the records of the order
-    data = [{
-        'id': transaction_id,
-        'user_mail': email,
-        'cloth_id': cloth_data['Id'],
-        'amount': cloth_data['Total Amount'],
-        'purchase_time': current_time
-    } for cloth_data in data]
+        # generate transaction_id
+        self._transaction_id = self._get_total_orders_number() + 1
 
-    # convert to DataFrame and insert it to the DB
-    df = pd.DataFrame(data)
-    push_dataframe_to_mysql(df=df, table_name=Tables.TRANSACTIONS)
+        # define items data
+        self._items_data = items_data
+
+    @staticmethod
+    def _get_total_orders_number() -> int:
+        """
+        Get the total numbers of orders until today from the DB
+        """
+        # create an appropriate SQL query and fetch the results from the DB
+        statement = """
+        SELECT max(id) as last_idx
+        FROM taufashion_10.transactions
+        """
+        df = fetch_data_from_mysql(sql_statement=statement)
+
+        # extract the result
+        result = df['last_idx'][0]
+        return result
+
+    def _get_transaction_data(self) -> pd.DataFrame:
+        """
+        Define the new row of the transaction
+        """
+        return pd.DataFrame([{
+            'id': self._transaction_id,
+            'user_mail': self._email,
+            'purchase_time': self._current_time
+        }])
+
+    def _get_items_data(self) -> pd.DataFrame:
+        """
+        Add row for each product in the transaction
+        """
+        return pd.DataFrame([
+            {
+                'transaction_id': self._transaction_id,
+                'cloth_id': item_data['Id'],
+                'amount': item_data['Total Amount']
+            } for item_data in self._items_data
+        ])
+
+    def run(self) -> None:
+        """
+        Push the two dataframes to their target table in the DB
+        """
+        # collect data
+        transaction_df, item_df = self._get_transaction_data(), self._get_items_data()
+        # insert to DB
+        push_dataframe_to_mysql(df=transaction_df, table_name=Tables.TRANSACTIONS)
+        push_dataframe_to_mysql(df=item_df, table_name=Tables.ITEMS)
 
 
 def update_products_inventory(transaction_data: List[Dict[str, Any]]) -> None:
