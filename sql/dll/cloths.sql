@@ -5,6 +5,5 @@ CREATE TABLE `cloths` (
   `price` decimal(10,0) NOT NULL,
   `inventory` int NOT NULL,
   `campaign` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`,`name`,`path`),
-  UNIQUE KEY `id` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

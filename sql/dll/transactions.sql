@@ -1,8 +1,8 @@
 CREATE TABLE `transactions` (
-  `id` bigint NOT NULL,
+  `id` int NOT NULL,
   `user_mail` varchar(30) NOT NULL,
-  `cloth_id` int NOT NULL,
-  `amount` int NOT NULL,
   `purchase_time` datetime NOT NULL,
-  PRIMARY KEY (`id`,`user_mail`,`cloth_id`)
+  PRIMARY KEY (`id`),
+  KEY `user_mail_idx` (`user_mail`) /*!80000 INVISIBLE */,
+  CONSTRAINT `user_mail` FOREIGN KEY (`user_mail`) REFERENCES `users` (`email`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
