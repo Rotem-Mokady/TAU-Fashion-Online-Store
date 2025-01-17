@@ -173,9 +173,9 @@ def order_summary():
     if table:
         session['order_summary_info'] = table
         return render_template("order_summary.html", username=username, table=table)
-    # otherwise go back to admin page
+    # otherwise go back to home page
     else:
-        return redirect(url_for('admin'))
+        return redirect(url_for('home_page'))
 
 
 @app.route('/admin')
