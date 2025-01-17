@@ -72,5 +72,5 @@ def get_cloths_data() -> pd.DataFrame:
     """
     :return: pd.DataFrame. 30 examples of cloths.
     """
-    return pd.DataFrame([_generate_cloth_data() for _ in range(30)])
+    return pd.DataFrame([_generate_cloth_data() for _ in range(10)])
 

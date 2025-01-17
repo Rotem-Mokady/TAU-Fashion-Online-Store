@@ -1,6 +1,6 @@
 import os
 import base64
-
+import pandas as pd
 
 
 color_mapping = {
@@ -16,55 +16,17 @@ color_mapping = {
     'brown': 'data:image/jpeg;base64,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'
 }
 
+
 # Given list of file paths
-folder_paths = [
-    'static\\images\\products\\Men\\brown pants\\3421085',
-    'static\\images\\products\\Men\\black shirt\\6467533',
-    'static\\images\\products\\Women\\brown pants\\7663775',
-    'static\\images\\products\\Men\\white pants\\10291156',
-    'static\\images\\products\\Men\\purple shirt\\13753419',
-    'static\\images\\products\\Men\\green pants\\16385435',
-    'static\\images\\products\\Men\\black shirt\\17994948',
-    'static\\images\\products\\Men\\blue shirt\\19252847',
-    'static\\images\\products\\Women\\red pants\\20524016',
-    'static\\images\\products\\Men\\green pants\\26581299',
-    'static\\images\\products\\Women\\yellow pants\\28440189',
-    'static\\images\\products\\Women\\purple shirt\\30586888',
-    'static\\images\\products\\Men\\pink shirt\\36393477',
-    'static\\images\\products\\Women\\grey shirt\\41327821',
-    'static\\images\\products\\Women\\purple pants\\43739965',
-    'static\\images\\products\\Women\\purple shirt\\44304982',
-    'static\\images\\products\\Men\\purple pants\\44709296',
-    'static\\images\\products\\Women\\red pants\\47095019',
-    'static\\images\\products\\Women\\pink shirt\\54472532',
-    'static\\images\\products\\Women\\yellow shirt\\55579066',
-    'static\\images\\products\\Men\\yellow pants\\56877787',
-    'static\\images\\products\\Women\\red shirt\\57225998',
-    'static\\images\\products\\Women\\grey pants\\61100467',
-    'static\\images\\products\\Men\\purple pants\\64006952',
-    'static\\images\\products\\Women\\green shirt\\72016296',
-    'static\\images\\products\\Men\\black shirt\\72387771',
-    'static\\images\\products\\Women\\blue pants\\78749694',
-    'static\\images\\products\\Women\\black pants\\81626664',
-    'static\\images\\products\\Women\\black shirt\\86922398',
-    'static\\images\\products\\Men\\red pants\\93171869'
-]
+def generate_paths():
 
-# Initialize the result dictionary
-result_dict = {}
+    df = pd.read_excel('data_creation/data/cloths.xlsx')
+    prefix = 'static\\images\\products\\'
 
-# Iterate over the list of folder paths
-for path in folder_paths:
-    # Split the path to get the folder names
-    path_parts = path.split('\\')
+    return [prefix + cloth_data for cloth_data in df['path']]
 
-    # Extract the first word from the folder path (the color) from index 4
-    color = path_parts[4].split(' ')[0]  # Take the first word of the folder name (color)
 
-    # Check if the extracted color is in the color_mapping
-    if color in color_mapping:
-        # Use the path as the key and the value from color_mapping as the value
-        result_dict[path] = color_mapping[color]
+folder_paths = generate_paths()
 
 
 # Function to download and save the image
@@ -81,10 +43,27 @@ def download_and_save_image(local_path, image_url):
         img_file.write(image_data)
 
 
+# Initialize the result dictionary
+result_dict = {}
+
+# Iterate over the list of folder paths
+for path in folder_paths:
+    # Split the path to get the folder names
+    path_parts = path.split('\\')
+
+    # Extract the first word from the folder path (the color) from index 4
+    color = path_parts[3].split(' ')[0]  # Take the first word of the folder name (color)
+
+    # Check if the extracted color is in the color_mapping
+    if color in color_mapping:
+        # Use the path as the key and the value from color_mapping as the value
+        result_dict[path] = color_mapping[color]
+
+
 # Iterate over the result dictionary and download/save images
-for local_path, image_address in result_dict.items():
+for path, image_address in result_dict.items():
     # Construct the final local path (adding .png extension)
-    local_image_path = f"{local_path}.jpeg"
+    local_image_path = f"{path}.jpeg"
 
     # Download and save the image
     download_and_save_image(local_image_path, image_address)
