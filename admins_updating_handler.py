@@ -18,11 +18,13 @@ class _ParseRequestData:
         self._results = []
         self._current_row = {}
 
+        self._params_amount = 6
+
     def _current_row_insertion(self, param: str, value: str, familiar_flag: bool = True) -> None:
         # add param's name and it's value to the current row that the object is handling
         self._current_row[param] = value
-        # each row includes exactly 7 parameters
-        if len(self._current_row) == 7:
+        # each row includes a constant number of parameters
+        if len(self._current_row) == self._params_amount:
             # add old/new product flag, add the row to final results and create new empty row
             self._current_row['is_familiar'] = int(familiar_flag)
             self._results.append(self._current_row)
