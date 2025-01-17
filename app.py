@@ -149,8 +149,8 @@ def order_summary():
     if not username or not home_page_table:
         return redirect(url_for('home_page'))
 
-    # set an empty order table
-    table = []
+    # set an empty order table and total price
+    table, total_price = [], 0
     # iterate all products details from user's order
     for key in request.form:
         # focus only on "Your Order" parameter (the HTML tag is defined as "product_{product_id}")
@@ -164,15 +164,18 @@ def order_summary():
             if int(amount) != amount or amount <= 0:
                 continue
 
-            # collect and prepared all relevant details of the product and add them to the final order table
+            # collect and prepared all relevant details of the product
             product_info = get_product_full_details(cloths_table=home_page_table, product_id=product_id)
             product_summary = generate_summary_info(product_info=product_info, amount=int(amount))
+
+            # add all details to the final order table and to total price calculation
             table.append(product_summary)
+            total_price += product_summary['Total Price']
 
     # only if there is an actual order, get progress to order summary page
     if table:
         session['order_summary_info'] = table
-        return render_template("order_summary.html", username=username, table=table)
+        return render_template("order_summary.html", username=username, table=table, total_price=total_price)
     # otherwise go back to home page
     else:
         return redirect(url_for('home_page'))
