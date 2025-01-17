@@ -46,13 +46,14 @@
                             <th>Price</th>
                             <th>Inventory</th>
                             <th>Your Order</th>
+                            <th>Image</th> <!-- New column for image -->
                         </tr>
                     </thead>
                     <tbody>
                         {% for row in table %}
                             <tr>
                                 <!-- Make the "Id" clickable to redirect to the appropriate image path -->
-                                <td><a href="{{ row['Path'] }}">{{ row['Id'] }}</a></td>
+                                <td>{{ row['Id'] }}</td>
                                 <td>{{ row['Name'] }}</td>
                                 <td>{{ row['Price'] }}</td>
                                 <td>{{ row['Inventory'] }}</td>
@@ -60,6 +61,8 @@
                                 <td>
                                     <input type="number" name="product_{{ row['Id'] }}" value="{{ row['Your Order'] }}" min="0" max="{{ row['Inventory'] }}" step="1">
                                 </td>
+                                <!-- Add image column -->
+                                <td><img src="{{ row['Path'] }}" alt="{{ row['Name'] }}" class="product-image"></td> <!-- Assuming 'Image' key holds the image URL -->
                             </tr>
                         {% endfor %}
                     </tbody>

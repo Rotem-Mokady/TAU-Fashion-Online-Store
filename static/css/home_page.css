@@ -158,3 +158,8 @@ table td a:hover {
     background-color: #1e7e34; /* Darker green when clicked */
     transform: translateY(0); /* Reset lift effect */
 }
+
+.product-image {
+    width: 80px;  /* Example width */
+    height: auto; /* Maintain aspect ratio */
+}
