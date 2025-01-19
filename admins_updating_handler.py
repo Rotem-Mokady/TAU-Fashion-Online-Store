@@ -24,7 +24,12 @@ class _ParseRequestData:
         # add param's name and it's value to the current row that the object is handling
         self._current_row[param] = value
         # each row includes a constant number of parameters
-        if len(self._current_row) == self._params_amount:
+        # row of familiar product won't include Campaign flag
+        if (
+                (familiar_flag and len(self._current_row) == self._params_amount - 1)
+                or
+                (not familiar_flag and len(self._current_row) == self._params_amount)
+        ):
             # add old/new product flag, add the row to final results and create new empty row
             self._current_row['is_familiar'] = int(familiar_flag)
             self._results.append(self._current_row)
@@ -64,7 +69,7 @@ class _ParseRequestData:
         df_cleaned['Id'] = df_cleaned['Id'].astype('int64')
         df_cleaned['Inventory'] = df_cleaned['Inventory'].astype('int64')
         df_cleaned['Price'] = df_cleaned['Price'].astype(float)
-        df_cleaned['Campaign'] = df_cleaned['Campaign'].apply(lambda x: 1 if strtobool(x) else 0)
+        df_cleaned['Campaign'] = df_cleaned['Campaign'].fillna('True').apply(lambda x: 1 if strtobool(x) else 0)
 
         return df_cleaned
 
@@ -106,11 +111,7 @@ class UpdateClothsTable(_ParseRequestData):
     def _merged_df_data_prep(df: pd.DataFrame) -> pd.DataFrame:
         # generate mask for finding changes between the two datasets and create a new filtered dataset
         different_product_mask = (
-                (df['Name_old'] != df['Name_new']) |
-                (df['Path_old'] != df['Path_new']) |
-                (df['Price_old'] != df['Price_new']) |
-                (df['Inventory_old'] != df['Inventory_new']) |
-                (df['Campaign_old'] != df['Campaign_new'])
+                (df['Inventory_old'] != df['Inventory_new'])
         )
         filtered_df = df[different_product_mask]
 

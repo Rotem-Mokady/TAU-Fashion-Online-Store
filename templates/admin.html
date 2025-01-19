@@ -41,18 +41,18 @@
                             {% for cell in row %}
                                 <td>
                                     {% if table_headers[loop.index0] == 'Id' %}
-                                        <input type="number" name="Id_{{ row[0] }}" value="{{ cell }}" required min="0" step="1">
+                                        <input type="number" name="Id_{{ row[0] }}" value="{{ cell }}" required min="0" step="1" readonly>
                                     {% elif table_headers[loop.index0] == 'Price' %}
-                                        <input type="number" name="Price_{{ row[0] }}" value="{{ cell }}" required min="0" step="any">
+                                        <input type="number" name="Price_{{ row[0] }}" value="{{ cell }}" required min="0" step="any" readonly>
                                     {% elif table_headers[loop.index0] == 'Inventory' %}
                                         <input type="number" name="Inventory_{{ row[0] }}" value="{{ cell }}" required min="0">
                                     {% elif table_headers[loop.index0] == 'Campaign' %}
-                                        <select name="Campaign_{{ row[0] }}">
+                                        <select name="Campaign_{{ row[0] }}" disabled>
                                             <option value="True" {% if cell == 1 %}selected{% endif %}>True</option>
                                             <option value="False" {% if cell == 0 %}selected{% endif %}>False</option>
                                         </select>
                                     {% else %}
-                                        <input type="text" name="{{ table_headers[loop.index0] }}_{{ row[0] }}" value="{{ cell }}" required>
+                                        <input type="text" name="{{ table_headers[loop.index0] }}_{{ row[0] }}" value="{{ cell }}" required readonly>
                                     {% endif %}
                                 </td>
                             {% endfor %}
