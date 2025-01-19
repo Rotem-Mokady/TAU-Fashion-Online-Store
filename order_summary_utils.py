@@ -3,15 +3,19 @@ from typing import List, Dict, Any
 
 import pandas as pd
 
+from cloths_data_handler import ClothsDataCollection
 from db_utils import push_dataframe_to_mysql, Tables, run_sql_command, fetch_data_from_mysql
 
 
-def get_product_full_details(product_id: int, cloths_table: List[Dict[str, Any]]) -> Dict[str, Any]:
+def get_product_full_details(product_id: int) -> Dict[str, Any]:
     """
     Extract all saved data about the product id from cloth table
     """
+    # collect the data of the products from the DB
+    cloths = ClothsDataCollection()
+    table = cloths.home_page_data_to_html
     # convert array to DataFrame and filter on the given product
-    df = pd.DataFrame(cloths_table)
+    df = pd.DataFrame(table)
     mask = df['Id'] == product_id
     filtered_data = df[mask].to_dict(orient='records')
 

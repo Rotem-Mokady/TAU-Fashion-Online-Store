@@ -104,13 +104,9 @@ def home_page():
     if update_done:
         session['update_done'] = False
 
-    # collect the data of the products from the DB if an update has been done or if the session is empty
-    if update_done or not session.get('home_page_table'):
-        cloths = ClothsDataCollection()
-        table = cloths.home_page_data_to_html
-        session['home_page_table'] = table
-    else:
-        table = session['home_page_table']
+    # collect the data of the products from the DB
+    cloths = ClothsDataCollection()
+    table = cloths.home_page_data_to_html
 
     # collect the current success message and the current summary details from the order process
     order_summary_success_message = request.args.get('success_message', default=None)
@@ -120,17 +116,10 @@ def home_page():
     if order_summary_success_message and order_summary_info:
         # set a new order with no products on the following order
         session['order_summary_info'] = None
-
         # create a new transaction and insert it to the DB
         AddTransaction(username=username, items_data=order_summary_info).run()
         # subtract the ordered amount of each product from it's total inventory, and update in the DB
         update_products_inventory(transaction_data=order_summary_info)
-
-        # now we need to show a different data about the inventory
-        # collect the data from the DB again and store in the session
-        cloths = ClothsDataCollection()
-        table = cloths.home_page_data_to_html
-        session['home_page_table'] = table
 
     # if the user is not an admin and he tried to move to administrations' page, show him why he can't do that
     not_admin_message_error = request.args.get('error_message', default=None)
@@ -143,10 +132,10 @@ def home_page():
 
 @app.route('/order_summary', methods=['GET', 'POST'])
 def order_summary():
-    # get the username and his order from the session
-    username, home_page_table = session.get('username'), session.get('home_page_table')
+    # get the username
+    username = session.get('username')
     # go back to home page if from some reason one of the parameters is missing
-    if not username or not home_page_table:
+    if not username:
         return redirect(url_for('home_page'))
 
     # set an empty order table and total price
@@ -165,7 +154,7 @@ def order_summary():
                 continue
 
             # collect and prepared all relevant details of the product
-            product_info = get_product_full_details(cloths_table=home_page_table, product_id=product_id)
+            product_info = get_product_full_details(product_id=product_id)
             product_summary = generate_summary_info(product_info=product_info, amount=int(amount))
 
             # add all details to the final order table and to total price calculation
