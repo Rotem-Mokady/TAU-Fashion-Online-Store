@@ -4,7 +4,7 @@ import datetime as dt
 import pandas as pd
 from typing import List, Any, Union
 
-from db_utils import push_dataframe_to_mysql
+from utils.db_utils import push_dataframe_to_mysql
 
 
 def get_unique_column_values(file_path: str, column_name: str) -> List[Any]:

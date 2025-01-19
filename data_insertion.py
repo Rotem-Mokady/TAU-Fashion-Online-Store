@@ -6,7 +6,7 @@ from data_creation.managers_data import get_managers_data
 from data_creation.customers_data import get_regular_users_data
 from data_creation.cloths_data import get_cloths_data
 from data_creation.transactions_data import TransactionsGenerator
-from db_utils import Tables
+from utils.db_utils import Tables
 
 
 def users_data_handler() -> None:

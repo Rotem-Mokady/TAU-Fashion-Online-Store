@@ -1,6 +1,6 @@
 import pandas as pd
 
-from db_utils import fetch_data_from_mysql
+from utils.db_utils import fetch_data_from_mysql
 
 
 class ClothsSqlStatements:
@@ -50,7 +50,7 @@ class ClothsDataCollection(ClothsSqlStatements):
         """
         super().__init__()
         # the local path of all cloths' images
-        self._images_dir = "static\\images\\products"
+        self._images_dir = "../static/images/products"
 
         # get different dataframes for each Flask route, create also a version for advanced HTML manipulations (Jinja).
 

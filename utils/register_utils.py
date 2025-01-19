@@ -3,7 +3,7 @@ import re
 import datetime as dt
 import pandas as pd
 
-from db_utils import fetch_data_from_mysql, push_dataframe_to_mysql, Tables
+from utils.db_utils import fetch_data_from_mysql, push_dataframe_to_mysql, Tables
 
 
 def validate_email_template(email: str) -> bool:

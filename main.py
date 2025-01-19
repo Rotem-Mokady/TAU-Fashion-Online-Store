@@ -2,16 +2,16 @@ from flask import Flask, redirect, render_template, request, url_for, session
 import os
 from typing import Dict
 
-from register_utils import (
+from utils.register_utils import (
     validate_email_template, validate_username_template, validate_password_template,
     ensure_new_user, register_new_user, ensure_minimum_age
 )
-from auth_utils import signing_in_response, is_admin
-from cloths_data_handler import (
+from utils.auth_utils import signing_in_response, is_admin
+from utils.cloths_data_handler import (
     ClothsDataCollection
 )
-from admins_updating_handler import UpdateClothsTable
-from order_summary_utils import get_product_full_details, generate_summary_info, AddTransaction, \
+from utils.admins_updating_handler import UpdateClothsTable
+from utils.order_summary_utils import get_product_full_details, generate_summary_info, AddTransaction, \
     update_products_inventory
 
 app = Flask(__name__)
@@ -120,6 +120,9 @@ def home_page():
         AddTransaction(username=username, items_data=order_summary_info).run()
         # subtract the ordered amount of each product from it's total inventory, and update in the DB
         update_products_inventory(transaction_data=order_summary_info)
+        # collect the data of the products from the DB
+        cloths = ClothsDataCollection()
+        table = cloths.home_page_data_to_html
 
     # if the user is not an admin and he tried to move to administrations' page, show him why he can't do that
     not_admin_message_error = request.args.get('error_message', default=None)

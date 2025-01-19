@@ -1,4 +1,4 @@
-from db_utils import fetch_data_from_mysql
+from utils.db_utils import fetch_data_from_mysql
 
 
 def signing_in_response(username: str, password: str) -> bool:

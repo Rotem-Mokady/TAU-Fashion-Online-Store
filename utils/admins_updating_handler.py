@@ -3,7 +3,7 @@ from typing import Dict, List, Any
 
 import pandas as pd
 
-from db_utils import run_sql_command, push_dataframe_to_mysql, Tables
+from utils.db_utils import run_sql_command, push_dataframe_to_mysql, Tables
 
 
 class _ParseRequestData:
