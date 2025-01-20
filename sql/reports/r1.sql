@@ -1,29 +1,12 @@
-SELECT s.id,
-	   s.name,
-       s.orders,
-       CASE WHEN s.asc_ranking <= 3 THEN '3 Top Unpopular' ELSE '3 Top popular' END as description
+SELECT c.id,
+	   c.name,
+	   sum(tti.amount) as ordred_amount,
+	   round((sum(tti.amount) / (SELECT sum(amount) FROM taufashion_10.transaction_to_items)) * 100, 3) as ordred_amount_percantage
 
-FROM 
-	(
-		SELECT q.*,
-			   rank () over (order by q.orders asc) as asc_ranking,
-			   rank () over (order by q.orders desc) as desc_ranking
+FROM taufashion_10.cloths c
 
-		FROM 
-		(
-		SELECT c.id,
-			   c.name,
-			   count(DISTINCT tti.transaction_id) as orders
+LEFT JOIN taufashion_10.transaction_to_items tti
+ON c.id = tti.cloth_id
 
-		FROM taufashion_10.cloths c 
-
-		LEFT JOIN taufashion_10.transaction_to_items tti
-		ON c.id = tti.cloth_id 
-
-		GROUP BY c.id,
-				 c.name
-		) q      
-	)  s
-
-WHERE s.asc_ranking <= 3 OR s.desc_ranking <= 3
-       
+GROUP BY c.id,
+		 c.name
