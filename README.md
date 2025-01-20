@@ -1,7 +1,7 @@
-1) The file "main.py" will activate the application.
-2) The file "data_insertion.py" is the file that insert the data to the 
-   MySQL schema (taufashion_10). Please note the logic generates random data for some fields,
-   so probably the data that we used is a bit different.
-   The exact data that we used is available in "data_creation\data" directory, when each xlsx file 
-   includes the data of the table that has the same name as the filename.
-3) The path "sql\dll" includes all the dlls of the tables in our schema.
+Here’s a more readable version:
+
+1. The file **"main.py"** is used to start the application.
+
+2. The file **"data_insertion.py"** inserts data into the MySQL schema **(taufashion_10)**. Please note that the logic generates random data for certain fields, so the data used might differ slightly. The exact data we used can be found in the **"data_creation\data"** directory, where each **.xlsx** file corresponds to a table, with the file name matching the table name.
+
+3. The path **"sql\dll"** contains all the DLLs for the tables in our schema.
