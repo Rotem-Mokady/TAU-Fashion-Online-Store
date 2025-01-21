@@ -1,46 +1,22 @@
 import pandas as pd
 
-from data_creation.data_generation_helpers import PushToSql
-
-from data_creation.managers_data import get_managers_data
-from data_creation.customers_data import get_regular_users_data
-from data_creation.cloths_data import get_cloths_data
-from data_creation.transactions_data import TransactionsGenerator
-from utils.db_utils import Tables
+from utils.db_utils import push_dataframe_to_mysql, Tables
 
 
-def users_data_handler() -> None:
-    """
-    handle users data.
-    """
-    managers_data, regular_users_data = get_managers_data(), get_regular_users_data()
-    all_users_data = pd.concat([managers_data, regular_users_data], ignore_index=True)
+def run() -> None:
+    base_dir = "data_creation\\data"
+    table_to_xlsx_filename = {
+        Tables.USERS: "users",
+        Tables.CLOTHS: "cloths",
+        Tables.TRANSACTIONS: "transaction",
+        Tables.ITEMS: "transaction_to_items"
+    }
 
-    PushToSql(df=all_users_data, table_name=Tables.USERS).run(debug_mode=False, to_excel=True)
-
-
-def cloths_data_handler() -> None:
-    """
-    handle cloths data.
-    """
-    data = get_cloths_data()
-
-    PushToSql(df=data, table_name=Tables.CLOTHS).run(debug_mode=False, to_excel=True)
-
-
-def transactions_data_handler() -> None:
-    """
-    handle transactions data.
-    """
-    data = TransactionsGenerator(orders_num=1000).main()
-    transactions_df, items_df = data['transaction_data'], data['items_data']
-
-    PushToSql(df=transactions_df, table_name=Tables.TRANSACTIONS).run(debug_mode=False, to_excel=True)
-    PushToSql(df=items_df, table_name=Tables.ITEMS).run(debug_mode=False, to_excel=True)
+    for table_name, filename in table_to_xlsx_filename.items():
+        file_path = f'{base_dir}\\{filename}.xlsx'
+        df = pd.read_excel(file_path)
+        push_dataframe_to_mysql(df=df, table_name=table_name)
 
 
 if __name__ == '__main__':
-    # users_data_handler()
-    # cloths_data_handler()
-    # transactions_data_handler()
-    pass
+    run()
