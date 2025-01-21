@@ -13,18 +13,10 @@ from utils.cloths_data_handler import (
 from utils.admins_updating_handler import UpdateClothsTable
 from utils.order_summary_utils import get_product_full_details, generate_summary_info, AddTransaction, \
     update_products_inventory
-from utils.cloths_links_generator import ProductsLinksGenerator
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-
-
-def create_app() -> None:
-    """
-    Make sure that all products file paths exists before the service is running.
-    """
-    ProductsLinksGenerator().run()
-    app.run(debug=True)
 
 
 @app.route('/')
@@ -239,6 +231,6 @@ def save_cloths_table():
 
 
 if __name__ == "__main__":
-    create_app()
+    app.run(debug=True)
 
 
