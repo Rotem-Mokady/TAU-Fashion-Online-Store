@@ -19,6 +19,14 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 
+def create_app() -> None:
+    """
+    Make sure that all products file paths exists.
+    """
+    ProductsLinksGenerator().run()
+    app.run(debug=True)
+
+
 @app.route('/')
 def sign_in():
     # if there is an open session the user - go directly to home page
@@ -231,6 +239,6 @@ def save_cloths_table():
 
 
 if __name__ == "__main__":
-    ProductsLinksGenerator().run()
-    app.run(debug=True)
+    create_app()
+
 
