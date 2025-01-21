@@ -1,95 +1,48 @@
 from distutils.util import strtobool
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 
 import pandas as pd
 
 from utils.db_utils import run_sql_command, push_dataframe_to_mysql, Tables
 
 
-class _ParseRequestData:
-
-    def __init__(self, request_data: Dict) -> None:
-        """
-        The table from the HTML sends in a different format.
-        Parse it to the same structure of Cloths table.
-        """
-        self._request_data = request_data
-
-        self._results = []
-        self._current_row = {}
-
-        self._params_amount = 6
-
-    def _current_row_insertion(self, param: str, value: str, familiar_flag: bool = True) -> None:
-        # add param's name and it's value to the current row that the object is handling
-        self._current_row[param] = value
-        # each row includes a constant number of parameters
-        # row of familiar product won't include Campaign flag
-        if (
-                (familiar_flag and len(self._current_row) == self._params_amount - 1)
-                or
-                (not familiar_flag and len(self._current_row) == self._params_amount)
-        ):
-            # add old/new product flag, add the row to final results and create new empty row
-            self._current_row['is_familiar'] = int(familiar_flag)
-            self._results.append(self._current_row)
-            self._current_row = {}
-
-    def _parse_request(self) -> List[Dict]:
-        # iterate each key and value from user request
-        for key, val in self._request_data.items():
-
-            # handle familiar products
-            if not key.startswith('new_'):
-                param, _ = key.split('_')
-                self._current_row_insertion(param=param, value=val, familiar_flag=True)
-
-            # handle the new product row
-            else:
-                _, param = key.split('_')
-                self._current_row_insertion(param=param, value=val, familiar_flag=False)
-
-        # save final results and "clean" the instance's variable itself
-        results = self._results
-        self._results = []
-
-        return results
-
-    @staticmethod
-    def _data_prep_request_data_df(df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Prepare data after the structure has been changed.
-        """
-        # remove duplications of IDs
-        no_dup_df = df.drop_duplicates(subset='Id', keep='first')
-        # remove rows with None (anywhere)
-        df_cleaned = no_dup_df[~no_dup_df.isin([None, '']).any(axis=1)]
-
-        # handle dtypes
-        df_cleaned['Id'] = df_cleaned['Id'].astype('int64')
-        df_cleaned['Inventory'] = df_cleaned['Inventory'].astype('int64')
-        df_cleaned['Price'] = df_cleaned['Price'].astype(float)
-        df_cleaned['Campaign'] = df_cleaned['Campaign'].fillna('True').apply(lambda x: 1 if strtobool(x) else 0)
-
-        return df_cleaned
-
-    def user_request_parser(self) -> pd.DataFrame:
-        results = self._parse_request()
-        df = pd.DataFrame(results)
-        prepared_data = self._data_prep_request_data_df(df=df)
-
-        return prepared_data
-
-
-class UpdateClothsTable(_ParseRequestData):
+class UpdateClothsTable:
     def __init__(self, request_data: Dict, current_table: List[Dict[str, Any]]) -> None:
         """
         Handle the updating of the Cloths table by the new table from Admins' Flask route.
         """
-        super().__init__(request_data=request_data)
+        self._current_table_df = pd.DataFrame(current_table)
+        self._current_id_to_inventory = {
+            row['Id']: row['Inventory'] for row in self._current_table_df.to_dict(orient='records')
+        }
 
-        self.current_table_df = pd.DataFrame(current_table)
-        self.request_data_df = self.user_request_parser()
+        self._familiar_products_inventory, self._new_product_row = self._parse_request_data(request_data=request_data)
+
+        self._inventory_param_name = 'Inventory'
+
+    @staticmethod
+    def _parse_request_data(request_data: Dict) -> Tuple[Dict, Dict]:
+        """
+        parse data from HTML.
+        """
+        familiar_products_inventory, new_product_row = {}, {}
+        for key, val in request_data.items():
+
+            # handle familiar products
+            if key.startswith('Inventory_'):
+                _, product_id = key.split('_')
+                familiar_products_inventory[int(product_id)] = int(val)
+
+            # handle new product
+            elif key.startswith('new_'):
+                _, param_name = key.split('_')
+                new_product_row[param_name] = val
+
+            # any other case should not happen
+            else:
+                raise RuntimeError()
+
+        return familiar_products_inventory, new_product_row
 
     @staticmethod
     def _update_on_db(product_id: int, column_name: str, new_value: Any) -> None:
@@ -107,58 +60,70 @@ class UpdateClothsTable(_ParseRequestData):
         # run statement on DB
         run_sql_command(sql_command=stm)
 
-    @staticmethod
-    def _merged_df_data_prep(df: pd.DataFrame) -> pd.DataFrame:
-        # generate mask for finding changes between the two datasets and create a new filtered dataset
-        different_product_mask = (
-                (df['Inventory_old'] != df['Inventory_new'])
-        )
-        filtered_df = df[different_product_mask]
+    def _update_familiar_products(self) -> bool:
+        """
+        For each one of the familiar products, check if the user sent a different inventory from the current.
+        Return True for at least one different inventory, otherwise False.
+        """
+        # set updating flag
+        update_done = False
 
-        # remove irrelevant fields and change to the names on the DB itself
-        relevant_fields = [col for col in filtered_df.columns if not col.endswith('_old')]
-        final_df = filtered_df[relevant_fields]
-        final_df.columns = [col.replace('_new', '') for col in final_df.columns]
+        # iterate the familiar products from user
+        for product_id, new_inventory in self._familiar_products_inventory.items():
+            # compare old to new
+            old_inventory = self._current_id_to_inventory[product_id]
+            if new_inventory != old_inventory:
 
-        return final_df
+                # update in case of difference, and change the updating flag if needed
+                self._update_on_db(
+                    product_id=product_id, column_name=self._inventory_param_name, new_value=new_inventory
+                )
+                if not update_done:
+                    update_done = True
 
-    def _old_products_db_insertion(self, products_df: pd.DataFrame) -> None:
-        if products_df.empty:
-            return
-        # iterate each familiar product that has been changed by an admin
-        for record in products_df.to_dict(orient='records'):
-            # extract product id
-            product_id = record['Id']
+        return update_done
 
-            # update the DB about each parameter of the product
-            for column_name, new_value in record.items():
-                self._update_on_db(product_id=product_id, column_name=column_name, new_value=new_value)
+    def _insert_new_product(self) -> bool:
+        """
+        Add the new product if the inserted data is valid.
+        Return True if the new record has been inserted, otherwise False
+        """
+        final_record = {}
+        # validate and parse each parameter
+        for param, value in self._new_product_row.items():
 
-    @staticmethod
-    def _new_products_db_insertion(products_df: pd.DataFrame) -> None:
-        # push all new products to DB (if there are)
-        if not products_df.empty:
-            push_dataframe_to_mysql(df=products_df, table_name=Tables.CLOTHS)
+            # if there is at least one empty value, do not insert
+            if value == '':
+                return False
+            # if the id is already exists, do not insert
+            elif param == 'Id' and value in self._current_id_to_inventory:
+                return False
+
+            # convert to int if needed
+            elif param in ('Id', 'Inventory'):
+                final_record[param] = int(value)
+            # convert to float if needed
+            elif param == 'Price':
+                final_record[param] = float(value)
+            # convert tp boolean if needed
+            elif param == 'Campaign':
+                final_record[param] = strtobool(value)
+            # insert the value as it is
+            else:
+                final_record[param] = value
+
+        # if we are here it means the record is valid, push it to mysql
+        record_df = pd.DataFrame([final_record])
+        push_dataframe_to_mysql(df=record_df, table_name=Tables.CLOTHS)
+        # return True, because updating has been done
+        return True
 
     def run(self) -> bool:
         """
         Returns True if one value or more have been updated, False otherwise.
         """
-        # merge between the new data to the old, when the new is the "stronger" table
-        merged_df = self.request_data_df.merge(
-            self.current_table_df, how='left', on='Id', suffixes=('_new', '_old')
-        )
-        # data cleaning
-        df_to_push = self._merged_df_data_prep(df=merged_df)
-
-        # divide to two different datasets, one for UPDATE and another one for INSERT operations
-        is_familiar_mask = df_to_push['is_familiar'] == 1
-        familiar_products_df = df_to_push[is_familiar_mask].drop('is_familiar', axis=1)
-        unfamiliar_products_df = df_to_push[~is_familiar_mask].drop('is_familiar', axis=1)
-
-        # insert data to db
-        self._old_products_db_insertion(products_df=familiar_products_df)
-        self._new_products_db_insertion(products_df=unfamiliar_products_df)
+        familiar_updating_flag = self._update_familiar_products()
+        new_product_updating_flag = self._insert_new_product()
 
         # if there was data to update/insert return True, otherwise False
-        return not df_to_push.empty
+        return familiar_updating_flag or new_product_updating_flag

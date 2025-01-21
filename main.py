@@ -21,7 +21,7 @@ app.secret_key = os.urandom(24)
 
 def create_app() -> None:
     """
-    Make sure that all products file paths exists.
+    Make sure that all products file paths exists before the service is running.
     """
     ProductsLinksGenerator().run()
     app.run(debug=True)
