@@ -40,19 +40,12 @@
                         <tr>
                             {% for cell in row %}
                                 <td>
-                                    {% if table_headers[loop.index0] == 'Id' %}
-                                        <input type="number" name="Id_{{ row[0] }}" value="{{ cell }}" required min="0" step="1" readonly>
-                                    {% elif table_headers[loop.index0] == 'Price' %}
-                                        <input type="number" name="Price_{{ row[0] }}" value="{{ cell }}" required min="0" step="any" readonly>
-                                    {% elif table_headers[loop.index0] == 'Inventory' %}
+                                    {% if table_headers[loop.index0] == 'Inventory' %}
                                         <input type="number" name="Inventory_{{ row[0] }}" value="{{ cell }}" required min="0">
                                     {% elif table_headers[loop.index0] == 'Campaign' %}
-                                        <select name="Campaign_{{ row[0] }}" disabled>
-                                            <option value="True" {% if cell == 1 %}selected{% endif %}>True</option>
-                                            <option value="False" {% if cell == 0 %}selected{% endif %}>False</option>
-                                        </select>
+                                        <div>{{ "Yes" if cell == 1 else "No" }}</div>
                                     {% else %}
-                                        <input type="text" name="{{ table_headers[loop.index0] }}_{{ row[0] }}" value="{{ cell }}" required readonly>
+                                        <div>{{ cell }}</div>
                                     {% endif %}
                                 </td>
                             {% endfor %}
@@ -71,8 +64,8 @@
                                     <input type="number" name="new_Inventory" value="" min="0">
                                 {% elif header == 'Campaign' %}
                                     <select name="new_Campaign">
-                                        <option value="True">True</option>
-                                        <option value="False" selected>False</option>
+                                        <option value="True">Yes</option>
+                                        <option value="False" selected>No</option>
                                     </select>
                                 {% else %}
                                     <input type="text" name="new_{{ header }}" value="">
