@@ -223,7 +223,8 @@ def save_cloths_table():
     # update the DB if needed
     # return True if there was an actual update, otherwise False
     request_data: Dict = request.form
-    update_done = UpdateClothsTable(request_data=request_data, current_table=current_table).run()
+    new_image = request.files.get('new_image')
+    update_done = UpdateClothsTable(request_data=request_data, current_table=current_table, new_image=new_image).run()
 
     # set update status in the session and go back to admins' page
     session['update_done'] = update_done

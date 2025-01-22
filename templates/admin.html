@@ -26,13 +26,14 @@
     <section class="admin-table-section">
         <h2>Cloths Inventory - Editable Table</h2>
         <!-- Send user's new table to save_cloths_table Flask route -->
-        <form method="POST" action="{{ url_for('save_cloths_table') }}">
+        <form method="POST" action="{{ url_for('save_cloths_table') }}" enctype="multipart/form-data">
             <table class="admin-table">
                 <thead>
                     <tr>
                         {% for header in table_headers %}
                             <th>{{ header }}</th>
                         {% endfor %}
+                        <th>Image</th> <!-- New column for Image -->
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +50,7 @@
                                     {% endif %}
                                 </td>
                             {% endfor %}
+                            <td>not available here</td> <!-- Default value for the Image column -->
                         </tr>
                     {% endfor %}
 
@@ -72,6 +74,10 @@
                                 {% endif %}
                             </td>
                         {% endfor %}
+                        <td>
+                            <!-- Image upload field for the new row -->
+                            <input type="file" name="new_image" accept="image/*">
+                        </td>
                     </tr>
                 </tbody>
             </table>

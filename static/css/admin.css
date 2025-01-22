@@ -170,4 +170,75 @@ header .logo {
     text-align: center; /* Center the text */
 }
 
+/* Image upload input field style */
+input[type="file"] {
+    padding: 5px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 90%; /* Make it fit the table better */
+    background-color: #f9f9f9;
+    transition: background-color 0.3s, border-color 0.3s;
+}
 
+input[type="file"]:hover {
+    background-color: #f1f1f1;
+    border-color: #007bff;
+}
+
+input[type="file"]:focus {
+    outline: none;
+    border-color: #0056b3;
+}
+
+/* Custom file input container */
+input[type="file"]::-webkit-file-upload-button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #0056b3;
+}
+
+input[type="file"]::-webkit-file-upload-button:focus {
+    background-color: #0056b3;
+    outline: none;
+}
+
+/* Add a label for file input */
+input[type="file"] + label {
+    display: inline-block;
+    padding: 8px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+input[type="file"]:not(:empty) + label {
+    background-color: #28a745;
+}
+
+input[type="file"]:not(:empty) + label:hover {
+    background-color: #218838;
+}
+
+input[type="file"]:focus + label {
+    background-color: #0056b3;
+}
+
+/* Style the file input label */
+input[type="file"] + label:hover {
+    background-color: #0056b3;
+}
