@@ -50,7 +50,7 @@ class UpdateClothsTable:
 
         self._familiar_products_inventory, self._new_product_row = self._parse_request_data(request_data=request_data)
         self._new_image = new_image
-        self._new_image_existence = bool(self._new_image.filename)
+        self._is_image_exists = bool(self._new_image.filename)
 
         self._inventory_param_name = 'Inventory'
         self._images_target_path = 'static\\images\\products\\'
@@ -123,7 +123,7 @@ class UpdateClothsTable:
         Upload the image from the user to the appropriate local path
         """
         # do nothing if there is no file
-        if not self._new_image_existence:
+        if not self._is_image_exists:
             return
 
         # generate full path
@@ -144,7 +144,7 @@ class UpdateClothsTable:
         Return True if the new record has been inserted, otherwise False
         """
         # do not insert without an image
-        if not self._new_image_existence:
+        if not self._is_image_exists:
             return False
 
         final_record = {}
