@@ -5,3 +5,5 @@ Here’s a more readable version:
 2. The file **"data_insertion.py"** inserts data into the MySQL schema **(taufashion_10)**. 
 
 3. The path **"sql\dll"** contains all the DLLs for the tables in our schema.
+
+4. Please make sure that username **'root'** has the password **'root'**, and it has all relevant privileges.
