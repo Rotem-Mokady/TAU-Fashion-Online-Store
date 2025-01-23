@@ -8,7 +8,7 @@ def run() -> None:
     table_to_xlsx_filename = {
         Tables.USERS: "users",
         Tables.CLOTHS: "cloths",
-        Tables.TRANSACTIONS: "transaction",
+        Tables.TRANSACTIONS: "transactions",
         Tables.ITEMS: "transaction_to_items"
     }
 
