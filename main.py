@@ -181,6 +181,11 @@ def admin():
     if not username:
         return render_template("sign_in.html")
 
+    # avoid cases of direct access via URL
+    is_admin_flag = session.get('is_admin', default=False)
+    if not is_admin_flag:
+        return redirect(url_for('admin_auth_handler'))
+
     # collect the current update status (True if the user actually changed something, otherwise False)
     update_done = session.get('update_done', default=False)
 
@@ -207,6 +212,8 @@ def admin_auth_handler():
 
     # let the user to move to admins' page if he is an admin
     if is_admin_flag:
+        # store flag in session
+        session['is_admin'] = is_admin_flag
         return redirect(url_for("admin"))
 
     # send the user back to home page if he is not an admin and let him no why he is not allowed
