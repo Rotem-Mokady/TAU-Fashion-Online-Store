@@ -24,7 +24,10 @@ def insert_data_to_db() -> None:
     """
     read the data of each target table and insert it to the DB
     """
+    # define datasets base dir
     base_dir = "data_creation\\data"
+
+    # create mapping between table to it's appropriate dataset
     table_to_xlsx_filename = {
         Tables.USERS: "users",
         Tables.CLOTHS: "cloths",
@@ -32,6 +35,7 @@ def insert_data_to_db() -> None:
         Tables.ITEMS: "transaction_to_items"
     }
 
+    # push each datasets to the relevant target table
     for table_name, filename in table_to_xlsx_filename.items():
         file_path = f'{base_dir}\\{filename}.xlsx'
         df = pd.read_excel(file_path)
