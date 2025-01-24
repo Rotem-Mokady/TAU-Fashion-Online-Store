@@ -2,7 +2,7 @@ import pandas as pd
 from typing import Union
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
 
 
 class ConnectionDetails:
@@ -17,6 +17,23 @@ class Tables:
     CLOTHS = "cloths"
     TRANSACTIONS = "transactions"
     ITEMS = "transaction_to_items"
+
+
+def create_database(db_name: str) -> None:
+    """
+    The function creates mysql DB in localhost.
+    """
+    # connection string (no database specified)
+    connection_string = f"" \
+                        f"mysql+mysqlconnector://{ConnectionDetails.USERNAME}:{ConnectionDetails.PASSWORD}@" \
+                        f"{ConnectionDetails.HOST}"
+
+    # create an engine and connect to the server
+    engine = create_engine(connection_string)
+
+    # connect to the server and create the database
+    with engine.connect() as connection:
+        connection.execute(f"CREATE DATABASE IF NOT EXISTS `{db_name}`")
 
 
 def _create_mysql_engine() -> Engine:
@@ -86,8 +103,13 @@ def run_sql_command(sql_command: str) -> None:
         with engine.connect() as connection:
             # Execute the provided SQL command
             connection.execute(sql_command)
-            connection.execute('commit;')
             print("SQL command executed successfully.")
+            # commit - ignore cases of committing when connection is not available
+            try:
+                connection.execute('commit;')
+            except OperationalError as op_error:
+                if not ('MySQL Connection not available' in op_error.__str__()):
+                    raise op_error
 
     except SQLAlchemyError as e:
         print(f"Error executing SQL command: {e}")

@@ -1,12 +1,11 @@
-Here’s a more readable version:
+Instructions for TAUFashion application activating:
 
-1. The file **"main.py"** is used to start the application.
+1. Please make sure that username **'root'** has the password **'root'**, and it has all privileges.
 
-2. The file **"data_insertion.py"** inserts data into the MySQL schema **(taufashion_10)**. 
+2. The file **"data_insertion.py"** creates the schema **(taufashion_10)** and the tables, 
+   and then inserts the data into them (based on the DLL files). 
 
-3. The path **"sql\dll"** contains all the DLLs for the tables in our schema.
+3. The file **"main.py"** is used to start the application.
 
-4. Please make sure that username **'root'** has the password **'root'**, and it has all relevant privileges.
-
-5. Please notice the dependencies in **requirements.txt**.
+4. Please notice the dependencies in **requirements.txt**.
 

@@ -1,9 +1,29 @@
+import os
 import pandas as pd
 
-from utils.db_utils import push_dataframe_to_mysql, Tables
+from utils.db_utils import run_sql_command, push_dataframe_to_mysql, Tables, ConnectionDetails, create_database
 
 
-def run() -> None:
+def create_tables() -> None:
+    # ensure database exists
+    create_database(db_name=ConnectionDetails.DB)
+
+    # define dlls base dir
+    base_dir = "sql\\dll"
+
+    # iterate dlls and create table from each one
+    for filename in os.listdir(base_dir):
+        file_path = f'{base_dir}\\{filename}'
+        with open(file_path, 'r', encoding='utf-8') as file:
+            dll = file.read()
+            sql_command = f'use {ConnectionDetails.DB};{dll}'
+            run_sql_command(sql_command=sql_command)
+
+
+def insert_data_to_db() -> None:
+    """
+    read the data of each target table and insert it to the DB
+    """
     base_dir = "data_creation\\data"
     table_to_xlsx_filename = {
         Tables.USERS: "users",
@@ -16,6 +36,11 @@ def run() -> None:
         file_path = f'{base_dir}\\{filename}.xlsx'
         df = pd.read_excel(file_path)
         push_dataframe_to_mysql(df=df, table_name=table_name)
+
+
+def run() -> None:
+    create_tables()
+    insert_data_to_db()
 
 
 if __name__ == '__main__':
