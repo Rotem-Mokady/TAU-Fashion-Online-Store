@@ -1,0 +1,9 @@
+SQLAlchemy==1.3.13
+pandas
+Flask==2.2.5
+pillow
+Werkzeug==2.2.3
+mysql-connector-python==8.0.33
+
+
+
